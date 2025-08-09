@@ -1,19 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/_3872e7"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="20dp"
     tools:context=".MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="22sp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Playlist maker" />
+
+
+    <!-- Кнопка ПОИСК -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/searchButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="5dp"
+        android:text="ПОИСК"
+        android:textColor="@color/S_text"
+        android:textSize="24sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.1"
+        app:icon="@drawable/sssector"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconTint="@color/icon_col"
+        app:iconSize="25dp"
+        app:backgroundTint="#FFFFFF"
+        app:cornerRadius="16dp"/>
+
+    <!-- Кнопка МЕДИАТЕКА -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mediaButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="5dp"
+        android:text="МЕДИАТЕКА"
+        android:textColor="@color/texcolor"
+        android:textSize="24sp"
+        android:letterSpacing="0.1"
+        app:icon="@drawable/mediya"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconTint="#000000"
+        app:iconSize="25dp"
+        app:backgroundTint="@color/backgtint"
+        app:cornerRadius="16dp"/>
+
+    <!-- Кнопка НАСТРОЙКИ -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="НАСТРОЙКИ"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.1"
+        app:icon="@drawable/set"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconTint="#000000"
+        app:iconSize="25dp"
+        app:backgroundTint="#FFFFFF"
+        app:cornerRadius="16dp"/>
+
+</LinearLayout>
