@@ -8,4 +8,13 @@
     <color name="icon_col">#000000</color>
     <color name="texcolor">#000000</color>
     <color name="backgtint">#FFFFFF</color>
+    <color name="main_background">#3872E7</color>
+    <color name="search_text">#1A1B22</color>
+    <color name="media_text">#1A1B22</color>
+    <color name="media_background">#FFFFFF</color>
+    <color name="icon_color">#1A1B22</color>
+    <color name="icon_black">#000000</color>
+    <color name="icon_back">#1A1B22</color>
+    <color name="colorPrimary">#BB86FC</color>
+    <color name="colorPrimarySurface">#3700B3</color>
 </resources>
