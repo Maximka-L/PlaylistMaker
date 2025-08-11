@@ -10,6 +10,7 @@
     android:paddingBottom="20dp"
     tools:context=".MainActivity">
 
+    <!-- Toolbar остается отдельным элементом -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -20,58 +21,85 @@
         app:titleTextColor="@color/white"
         android:background="@color/main_background"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/searchButton"
+    <!-- Контейнер для кнопок с равным распределением пространства -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="8dp"
-        android:text="@string/search"
-        android:textColor="@color/search_text"
-        android:textSize="24sp"
-        android:textAllCaps="true"
-        android:letterSpacing="0.1"
-        app:icon="@drawable/sssector"
-        app:iconGravity="textStart"
-        app:iconPadding="16dp"
-        app:iconTint="@color/icon_color"
-        app:iconSize="25dp"
-        app:backgroundTint="@color/white"
-        app:cornerRadius="16dp"/>
+        android:orientation="vertical"
+        android:gravity="center_vertical">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mediaButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="8dp"
-        android:text="@string/media_library"
-        android:textColor="@color/media_text"
-        android:textSize="24sp"
-        android:letterSpacing="0.1"
-        app:icon="@drawable/mediya"
-        app:iconGravity="textStart"
-        app:iconPadding="16dp"
-        app:iconTint="@color/icon_black"
-        app:iconSize="25dp"
-        app:backgroundTint="@color/media_background"
-        app:cornerRadius="16dp"/>
+        <!-- Кнопка поиска -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/settingsButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/settings"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textAllCaps="true"
-        android:letterSpacing="0.1"
-        app:icon="@drawable/set"
-        app:iconGravity="textStart"
-        app:iconPadding="16dp"
-        app:iconTint="@color/icon_black"
-        app:iconSize="25dp"
-        app:backgroundTint="@color/white"
-        app:cornerRadius="16dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/searchButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/search"
+                android:textColor="@color/search_text"
+                android:textSize="24sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                app:icon="@drawable/sssector"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconTint="@color/icon_color"
+                app:iconSize="25dp"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="16dp"/>
+        </LinearLayout>
+
+        <!-- Кнопка медиатеки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mediaButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/media_library"
+                android:textColor="@color/media_text"
+                android:textSize="24sp"
+                android:letterSpacing="0.1"
+                app:icon="@drawable/mediya"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconTint="@color/icon_black"
+                app:iconSize="25dp"
+                app:backgroundTint="@color/media_background"
+                app:cornerRadius="16dp"/>
+        </LinearLayout>
+
+        <!-- Кнопка настроек -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settingsButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/settings"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                app:icon="@drawable/set"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconTint="@color/icon_black"
+                app:iconSize="25dp"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="16dp"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
