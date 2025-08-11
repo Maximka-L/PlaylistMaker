@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/back"
         app:title="Поиск"
-        app:titleTextColor="@android:color/black"/>
+        app:titleTextColor="@android:color/black" />
 
     <!-- Текст по центру -->
     <TextView
@@ -25,11 +25,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Еще рано"
-        android:textSize="24sp"
         android:textColor="@android:color/black"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,7 +14,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { view, insets ->
-            val statusBar = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            val statusBar =
+                insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
             view.updatePadding(top = statusBar.top)
             insets
         }

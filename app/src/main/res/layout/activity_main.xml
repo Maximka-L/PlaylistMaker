@@ -4,8 +4,8 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/main_background"
+    android:orientation="vertical"
     android:paddingHorizontal="16dp"
     android:paddingBottom="20dp"
     tools:context=".MainActivity">
@@ -16,65 +16,65 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginBottom="20dp"
+        android:background="@color/main_background"
         app:title="@string/app_name"
         app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-        app:titleTextColor="@color/white"
-        android:background="@color/main_background"/>
+        app:titleTextColor="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <!-- Кнопка поиска -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/searchButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:letterSpacing="0.1"
                 android:text="@string/search"
+                android:textAllCaps="true"
                 android:textColor="@color/search_text"
                 android:textSize="24sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/sssector"
                 app:iconGravity="textStart"
                 app:iconPadding="16dp"
-                app:iconTint="@color/icon_color"
                 app:iconSize="25dp"
-                app:backgroundTint="@color/white"
-                app:cornerRadius="16dp"/>
+                app:iconTint="@color/icon_color" />
         </LinearLayout>
 
         <!-- Кнопка медиатеки -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mediaButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:letterSpacing="0.1"
                 android:text="@string/media_library"
                 android:textColor="@color/media_text"
                 android:textSize="24sp"
-                android:letterSpacing="0.1"
+                app:backgroundTint="@color/media_background"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/mediya"
                 app:iconGravity="textStart"
                 app:iconPadding="16dp"
-                app:iconTint="@color/icon_black"
                 app:iconSize="25dp"
-                app:backgroundTint="@color/media_background"
-                app:cornerRadius="16dp"/>
+                app:iconTint="@color/icon_black" />
         </LinearLayout>
 
         <!-- Кнопка настроек -->
@@ -87,18 +87,18 @@
                 android:id="@+id/settingsButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:letterSpacing="0.1"
                 android:text="@string/settings"
+                android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:textSize="24sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/set"
                 app:iconGravity="textStart"
                 app:iconPadding="16dp"
-                app:iconTint="@color/icon_black"
                 app:iconSize="25dp"
-                app:backgroundTint="@color/white"
-                app:cornerRadius="16dp"/>
+                app:iconTint="@color/icon_black" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
