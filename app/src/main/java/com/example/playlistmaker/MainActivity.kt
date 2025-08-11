@@ -41,11 +41,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupButtons() {
         findViewById<MaterialButton>(R.id.searchButton).setOnClickListener {
-            // TODO: Реализовать поиск (еще рано)
+            startActivity(Intent(this, SearchActivity::class.java))
         }
 
         findViewById<MaterialButton>(R.id.mediaButton).setOnClickListener {
-            // TODO: Реализовать медиа-функции (еще рано)
+            startActivity(Intent(this, MediaActivity::class.java))
         }
 
         findViewById<MaterialButton>(R.id.settingsButton).setOnClickListener {

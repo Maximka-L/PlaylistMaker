@@ -21,7 +21,6 @@
         app:titleTextColor="@color/white"
         android:background="@color/main_background"/>
 
-    <!-- Контейнер для кнопок с равным распределением пространства -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
