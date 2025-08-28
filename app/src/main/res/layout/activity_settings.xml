@@ -13,7 +13,7 @@
         android:layout_marginBottom="24dp"
         app:navigationIcon="@drawable/back"
         app:title="@string/settings_title"
-        app:navigationIconTint="@color/cardview_dark_background"
+        app:navigationIconTint="@color/icon_back"
         app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
     <LinearLayout

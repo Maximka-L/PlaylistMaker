@@ -11,44 +11,45 @@
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
-
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         app:navigationIcon="@drawable/back"
-        app:navigationIconTint="?attr/colorControlNormal"
+        app:navigationIconTint="?attr/colorOnSurface"
         app:title="@string/search"
-        app:titleTextColor="?attr/colorControlNormal" />
+        app:titleTextColor="?attr/colorOnSurface" />
 
-    <!-- Поле поиска и кнопка очистки -->
+    <!-- Поле поиска + кнопка очистки -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="48dp"
         android:layout_margin="16dp"
         android:background="@drawable/bg_search"
-        android:paddingHorizontal="12dp">
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
         <EditText
             android:id="@+id/searchEditText"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
+            android:layout_height="match_parent"
+            android:background="@null"
             android:hint="@string/search"
-            android:textColorHint="@color/search_hint"
-            android:background="@drawable/bg_search"
             android:inputType="text"
             android:maxLines="1"
+            android:textColor="@color/search_text"
+            android:textColorHint="@color/search"
             android:drawableStart="@drawable/sssector"
             android:drawablePadding="8dp"
-            android:drawableTint="@color/search_hint"/>
+            android:drawableTint="@color/search" />
 
         <ImageView
             android:id="@+id/clearButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="end|center_vertical"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:visibility="gone"/>
-    </FrameLayout>
+            android:src="@drawable/ic_clear_24"
+            android:visibility="gone"
+            app:tint="@color/clear" />
 
+    </FrameLayout>
 </LinearLayout>
