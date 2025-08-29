@@ -1,11 +1,10 @@
 package com.example.playlistmaker
-
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
@@ -15,6 +14,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isDark = prefs.getBoolean("dark_theme", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -31,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
-            setSupportActionBar(this)
             title = try {
                 getString(R.string.app_name)
             } catch (e: Resources.NotFoundException) {
