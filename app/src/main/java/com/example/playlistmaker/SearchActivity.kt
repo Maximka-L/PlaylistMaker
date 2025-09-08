@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
@@ -90,7 +91,14 @@ class SearchActivity : AppCompatActivity() {
         )
 
         val adapter = TracksAdapter(tracks)
+        // val adapter = TracksAdapter(listOf())  на будущие
         findViewById<RecyclerView>(R.id.recycler).adapter = adapter
+
+        findViewById<EditText>(R.id.searchEditText).doOnTextChanged { text, start, count, after ->
+            val filteredTracks = tracks.filter { it.trackName.lowercase().contains(text.toString().lowercase()) || it.artistName.lowercase().contains(text.toString().lowercase()) }
+            adapter.updateDataset(filteredTracks)
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
