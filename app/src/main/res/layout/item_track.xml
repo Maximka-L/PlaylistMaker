@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="61dp">
+
+
+    <ImageView
+
+        android:id="@+id/ivArtwork"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="13dp"
+        android:contentDescription="@string/track_artwork"
+        android:src="@drawable/bg_search"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <TextView
+        android:id="@+id/tvTrackName"
+        android:layout_width="0dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="@dimen/item_track_margin_start"
+        android:layout_marginTop="@dimen/item_track_margin_top"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/icon_back"
+        android:textStyle="normal"
+        app:layout_constraintStart_toEndOf="@id/ivArtwork"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Yesterday (Remastered 2009)" />
+
+    <!--  артист -->
+    <TextView
+        android:id="@+id/tvArtistName"
+        android:layout_width="wrap_content"
+        android:layout_height="13dp"
+        android:ellipsize="end"
+        android:maxWidth="100dp"
+        android:maxLines="1"
+        android:text="The Beatles"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="@id/tvTrackName"
+        app:layout_constraintTop_toBottomOf="@id/tvTrackName" />
+
+    <!-- Длительность -->
+
+    <ImageView
+        android:id="@+id/ic_dot"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        app:layout_constraintStart_toEndOf="@+id/tvArtistName"
+        app:layout_constraintTop_toBottomOf="@+id/tvTrackName"
+        app:srcCompat="@drawable/ic_dots" />
+
+    <TextView
+        android:id="@+id/tvTrackTime"
+        android:layout_width="wrap_content"
+        android:layout_height="13dp"
+        android:text="2:55"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="11sp"
+        app:layout_constraintStart_toEndOf="@+id/ic_dot"
+        app:layout_constraintTop_toBottomOf="@+id/tvTrackName" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
