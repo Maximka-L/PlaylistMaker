@@ -34,5 +34,7 @@
     <color name="search_hint">#1A1B22</color>
     <color name="search">#1A1B22</color>
     <color name="clear">#1A1B22</color>
+    <color name="textColor">#1A1B22</color>
+
 
 </resources>
