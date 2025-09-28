@@ -49,7 +49,7 @@
             android:layout_height="14dp"
             android:layout_gravity="end|center_vertical"
             android:src="@drawable/ic_clear_24"
-
+            android:visibility="gone"
             app:tint="@color/clear" />
 
     </FrameLayout>

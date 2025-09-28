@@ -74,6 +74,8 @@ class SearchActivity : AppCompatActivity() {
         searchEditText.doOnTextChanged { text, _, _, _ ->
             val query = text?.toString()?.trim().orEmpty()
 
+            clearButton.isVisible = query.isNotEmpty()
+
             if (query.isEmpty()) {
                 adapter.updateDataset(emptyList())
                 adapter.notifyDataSetChanged()
@@ -152,46 +154,36 @@ class SearchActivity : AppCompatActivity() {
 
     private fun performSearch(query: String) {
         searchQuery = query
-
-
         showEmptyState(true, "Загрузка...")
-
-
 
         lifecycleScope.launch {
             try {
                 val response = NetworkClient.api.searchSongs(query)
                 val tracks = response.results.map { it.toTrack() }
 
-                val filteredTracks = tracks.filter { it.trackName.lowercase().contains(query.toString().lowercase()) || it.artistName.lowercase().contains(query.toString().lowercase()) }
-
-                adapter.updateDataset(filteredTracks)
-
-                adapter.updateDataset(filteredTracks)
+                adapter.updateDataset(tracks)
                 adapter.notifyDataSetChanged()
 
-                if (filteredTracks.isEmpty()) {
+                if (tracks.isEmpty()) {
                     showEmptyState(true, "Ничего не нашлось")
                 } else {
                     showEmptyState(false)
                 }
 
             } catch (e: IOException) {
-
                 showEmptyState(
                     true,
-                    "Проблемы со связью\n Загрузка не удалась. Проверьте подключение к интернету",
+                    "Проблемы со связью Загрузка не удалась. Проверьте подключение к интернету",
                     showButton = true
                 )
                 adapter.updateDataset(emptyList())
                 adapter.notifyDataSetChanged()
-            } catch (e: Exception) {
 
-                showEmptyState(true, "Произошла ошибка")
+            } catch (e: Exception) {
+                showEmptyState(true, getString(R.string.error_no_connection), showButton = true)
                 adapter.updateDataset(emptyList())
                 adapter.notifyDataSetChanged()
             }
-
         }
     }
 }
