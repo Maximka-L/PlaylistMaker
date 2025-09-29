@@ -15,7 +15,7 @@
     <string name="support_email">maxim.lishuck@yandex.ru</string>
     <string name="support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="support_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
-
+    <string name="error_no_connection">Проблемы со связью Загрузка не удалась. Проверьте подключение к интернету</string>
 
     <string name="track_artwork">Обложка трека</string>
     <string name="more">Подробнее</string>
