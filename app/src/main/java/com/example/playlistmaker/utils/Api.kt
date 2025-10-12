@@ -3,6 +3,7 @@ package com.example.playlistmaker.utils
 import com.example.playlistmaker.Track
 
 data class TrackDto(
+    val trackId: Int,                   //
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
@@ -18,6 +19,7 @@ fun TrackDto.toTrack(): Track {
     val minutes = java.text.SimpleDateFormat("mm:ss", java.util.Locale.getDefault())
         .format(trackTimeMillis)
     return Track(
+        trackId = trackId,
         trackName = trackName,
         artistName = artistName,
         trackTime = minutes,
