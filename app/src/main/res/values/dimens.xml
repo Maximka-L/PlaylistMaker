@@ -6,5 +6,9 @@
     <dimen name="corner_radius_small">2dp</dimen>
     <dimen name="item_track_margin_start">8dp</dimen>
     <dimen name="item_track_margin_top">14dp</dimen>
+    <dimen name="padding_default">16dp</dimen>
+    <dimen name="margin_medium">15dp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="corner_radius_large">20dp</dimen>
 
 </resources>

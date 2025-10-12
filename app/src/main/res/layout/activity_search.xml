@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/padding_default"
         android:visibility="visible">
 
         <TextView
@@ -67,17 +67,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="@dimen/margin_medium"
             android:gravity="center"
-            android:text="Вы искали"
+            android:text="@string/history_title"
+            android:fontFamily="@font/ys_display_medium"
             android:textColor="?android:textColorPrimary"
-            android:textSize="18sp" />
+            android:textSize="@dimen/text_size_medium" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/margin_medium"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_track" />
 
@@ -88,9 +89,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:backgroundTint="?android:textColorPrimary"
-            android:text="Очистить историю"
+            android:text="@string/clear_history"
             android:textColor="@color/textColor"
-            app:cornerRadius="20dp" />
+            app:cornerRadius="@dimen/corner_radius_large" />
 
     </LinearLayout>
 
