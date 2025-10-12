@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.utils.dpToPx // Импортируем нашу функцию-расширение
+import com.example.playlistmaker.utils.dpToPx
 
 class TracksAdapter(
-    var dataset: List<Track>
+    private var dataset: List<Track>,
+    private val onItemClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
 
-    class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivArtwork: ImageView = itemView.findViewById(R.id.ivArtwork)
         private val tvTrackName: TextView = itemView.findViewById(R.id.tvTrackName)
         private val tvArtistName: TextView = itemView.findViewById(R.id.tvArtistName)
@@ -30,11 +31,14 @@ class TracksAdapter(
                 .load(track.artworkUrl100)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.ic_placeholder)
-                // Используем функцию-расширение и ресурсы:
                 .transform(RoundedCorners(itemView.dpToPx(itemView.resources.getDimension(R.dimen.corner_radius_small))))
                 .into(ivArtwork)
+
+            // 🔹 добавляем обработку клика
+            itemView.setOnClickListener {
+                onItemClick(track)
+            }
         }
-        // Удаляем старый private метод dpToPx - он теперь в Ext.kt
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {

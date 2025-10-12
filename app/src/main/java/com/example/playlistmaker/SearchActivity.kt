@@ -3,10 +3,8 @@ package com.example.playlistmaker
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.utils.NetworkClient
 import com.example.playlistmaker.utils.toTrack
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -34,21 +33,27 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var infoBlock: LinearLayout
     private lateinit var emptyIcon: ImageView
     private lateinit var emptyText: TextView
-    private lateinit var emptyButton: Button
+    private lateinit var emptyButton: MaterialButton
+
+    private lateinit var youSearchedText: TextView
+    private lateinit var clearHistoryButton: MaterialButton
+
+    private lateinit var SearchHistory: SearchHistory
+    private lateinit var adapter: TracksAdapter
 
     private var searchQuery = ""
-
-    private lateinit var adapter: TracksAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_search)
 
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.searchRoot)) { view, insets ->
             view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top)
             insets
         }
+
 
         toolbar = findViewById(R.id.toolbar)
         searchEditText = findViewById(R.id.searchEditText)
@@ -58,12 +63,20 @@ class SearchActivity : AppCompatActivity() {
         emptyText = findViewById(R.id.empty_text)
         emptyButton = findViewById(R.id.empty_button)
 
+        youSearchedText = findViewById(R.id.youserchs)
+        clearHistoryButton = findViewById(R.id.clear_histors)
+
+        SearchHistory = SearchHistory(applicationContext.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE))
+
         val recycler = findViewById<RecyclerView>(R.id.recycler)
-        adapter = TracksAdapter(listOf())
+        adapter = TracksAdapter(SearchHistory.getHistory()) { track ->
+            SearchHistory.addTrack(track)
+        }
         recycler.adapter = adapter
 
         toolbar.setNavigationOnClickListener { finish() }
 
+        // Очистка поля поиска
         clearButton.setOnClickListener {
             searchEditText.text.clear()
             searchEditText.clearFocus()
@@ -71,20 +84,43 @@ class SearchActivity : AppCompatActivity() {
                 .hideSoftInputFromWindow(searchEditText.windowToken, 0)
         }
 
+        // Очистка истории
+        clearHistoryButton.setOnClickListener {
+            SearchHistory.clearHistory()
+            adapter.updateDataset(emptyList())
+            adapter.notifyDataSetChanged()
+            youSearchedText.isVisible = false
+            clearHistoryButton.isVisible = false
+        }
+
+        // Реакция на изменения текста
         searchEditText.doOnTextChanged { text, _, _, _ ->
             val query = text?.toString()?.trim().orEmpty()
 
             clearButton.isVisible = query.isNotEmpty()
 
             if (query.isEmpty()) {
-                adapter.updateDataset(emptyList())
+                val history = SearchHistory.getHistory()
+
+                if (history.isEmpty()) {
+                    adapter.updateDataset(emptyList())
+                    youSearchedText.isVisible = false
+                    clearHistoryButton.isVisible = false
+                    showEmptyState(false)
+                } else {
+                    adapter.updateDataset(history)
+                    youSearchedText.isVisible = true
+                    clearHistoryButton.isVisible = true
+                    showEmptyState(false)
+                }
+
                 adapter.notifyDataSetChanged()
-                showEmptyState(false)
                 return@doOnTextChanged
             }
 
             performSearch(query)
         }
+
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -93,18 +129,7 @@ class SearchActivity : AppCompatActivity() {
                     performSearch(query)
                 }
                 true
-            } else {
-                false
-            }
-        }
-
-        emptyButton.setOnClickListener {
-            if (searchQuery.isNotEmpty()) {
-                performSearch(searchQuery)
-            } else {
-
-                performSearch("")
-            }
+            } else false
         }
 
         if (!isNetworkAvailable()) {
@@ -113,15 +138,17 @@ class SearchActivity : AppCompatActivity() {
                 "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
                 showButton = true
             )
-
         } else {
             showEmptyState(false)
             searchEditText.isEnabled = true
         }
+
+
+        updateHistoryVisibility()
     }
 
     private fun showEmptyState(show: Boolean, text: String = "", showButton: Boolean = false) {
-        infoBlock.visibility = if (show) View.VISIBLE else View.GONE
+        infoBlock.isVisible = show
         emptyIcon.isVisible = show
         emptyText.isVisible = show
         emptyButton.isVisible = showButton
@@ -138,18 +165,10 @@ class SearchActivity : AppCompatActivity() {
         return networkInfo != null && networkInfo.isConnected
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("SEARCH_QUERY", searchQuery)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString("SEARCH_QUERY", "") ?: ""
-        searchEditText.setText(searchQuery)
-        if (searchQuery.isNotEmpty()) {
-            performSearch(searchQuery)
-        }
+    private fun updateHistoryVisibility() {
+        val hasHistory = SearchHistory.getHistory().isNotEmpty()
+        youSearchedText.isVisible = hasHistory
+        clearHistoryButton.isVisible = hasHistory
     }
 
     private fun performSearch(query: String) {
@@ -166,23 +185,29 @@ class SearchActivity : AppCompatActivity() {
 
                 if (tracks.isEmpty()) {
                     showEmptyState(true, "Ничего не нашлось")
+                    youSearchedText.isVisible = false
+                    clearHistoryButton.isVisible = false
                 } else {
                     showEmptyState(false)
+                    youSearchedText.isVisible = false
+                    clearHistoryButton.isVisible = false
                 }
 
             } catch (e: IOException) {
                 showEmptyState(
                     true,
-                    "Проблемы со связью Загрузка не удалась. Проверьте подключение к интернету",
+                    "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
                     showButton = true
                 )
-                adapter.updateDataset(emptyList())
+                adapter.updateDataset(SearchHistory.getHistory())
                 adapter.notifyDataSetChanged()
+                updateHistoryVisibility()
 
             } catch (e: Exception) {
                 showEmptyState(true, getString(R.string.error_no_connection), showButton = true)
-                adapter.updateDataset(emptyList())
+                adapter.updateDataset(SearchHistory.getHistory())
                 adapter.notifyDataSetChanged()
+                updateHistoryVisibility()
             }
         }
     }
