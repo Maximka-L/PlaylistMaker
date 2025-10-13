@@ -3,11 +3,16 @@ package com.example.playlistmaker.utils
 import com.example.playlistmaker.Track
 
 data class TrackDto(
-    val trackId: Int,                   //
+    val trackId: Int,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
-    val artworkUrl100: String
+    val artworkUrl100: String,
+    // ДОБАВЬТЕ ЭТИ ПОЛЯ:
+    val collectionName: String? = null,
+    val releaseDate: String? = null,
+    val primaryGenreName: String? = null,
+    val country: String? = null
 )
 
 data class SearchResponse(
@@ -23,6 +28,11 @@ fun TrackDto.toTrack(): Track {
         trackName = trackName,
         artistName = artistName,
         trackTime = minutes,
-        artworkUrl100 = artworkUrl100
+        artworkUrl100 = artworkUrl100,
+        // ПЕРЕДАЙТЕ ВСЕ ПОЛЯ В Track:
+        collectionName = collectionName,
+        releaseDate = releaseDate,
+        primaryGenreName = primaryGenreName,
+        country = country
     )
 }

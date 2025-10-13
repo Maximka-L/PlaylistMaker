@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -48,12 +49,10 @@ class SearchActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_search)
 
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.searchRoot)) { view, insets ->
             view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top)
             insets
         }
-
 
         toolbar = findViewById(R.id.toolbar)
         searchEditText = findViewById(R.id.searchEditText)
@@ -69,8 +68,14 @@ class SearchActivity : AppCompatActivity() {
         SearchHistory = SearchHistory(applicationContext.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE))
 
         val recycler = findViewById<RecyclerView>(R.id.recycler)
+
+        // 🔹 ИЗМЕНИТЕ ТОЛЬКО ЭТУ СТРОКУ - добавьте открытие AudioPlayerActivity
         adapter = TracksAdapter(SearchHistory.getHistory()) { track ->
             SearchHistory.addTrack(track)
+            // 🔹 ДОБАВЬТЕ ЭТИ ДВЕ СТРОКИ:
+            val intent = Intent(this@SearchActivity, AudioPlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
         }
         recycler.adapter = adapter
 
@@ -121,7 +126,6 @@ class SearchActivity : AppCompatActivity() {
             performSearch(query)
         }
 
-
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = searchEditText.text.toString().trim()
@@ -142,7 +146,6 @@ class SearchActivity : AppCompatActivity() {
             showEmptyState(false)
             searchEditText.isEnabled = true
         }
-
 
         updateHistoryVisibility()
     }
