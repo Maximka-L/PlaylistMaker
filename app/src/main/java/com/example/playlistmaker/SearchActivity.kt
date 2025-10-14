@@ -69,10 +69,9 @@ class SearchActivity : AppCompatActivity() {
 
         val recycler = findViewById<RecyclerView>(R.id.recycler)
 
-        // 🔹 ИЗМЕНИТЕ ТОЛЬКО ЭТУ СТРОКУ - добавьте открытие AudioPlayerActivity
+
         adapter = TracksAdapter(SearchHistory.getHistory()) { track ->
             SearchHistory.addTrack(track)
-            // 🔹 ДОБАВЬТЕ ЭТИ ДВЕ СТРОКИ:
             val intent = Intent(this@SearchActivity, AudioPlayerActivity::class.java)
             intent.putExtra("track", track)
             startActivity(intent)

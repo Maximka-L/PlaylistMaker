@@ -35,7 +35,6 @@ android {
         jvmTarget = "11"
     }
 
-    // ДОБАВЬТЕ ЭТОТ БЛОК ДЛЯ VIEW BINDING
     buildFeatures {
         viewBinding = true
     }
@@ -58,6 +57,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     // OkHttp (логирование запросов, опционально)
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

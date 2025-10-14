@@ -8,7 +8,6 @@ data class TrackDto(
     val artistName: String,
     val trackTimeMillis: Long,
     val artworkUrl100: String,
-    // ДОБАВЬТЕ ЭТИ ПОЛЯ:
     val collectionName: String? = null,
     val releaseDate: String? = null,
     val primaryGenreName: String? = null,
