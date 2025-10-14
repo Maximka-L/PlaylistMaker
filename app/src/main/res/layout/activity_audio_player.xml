@@ -103,7 +103,7 @@
             app:layout_constraintBottom_toBottomOf="@id/playButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/playButton"
-            android:src="@drawable/test2"/>
+            android:src="@drawable/ic_add_playlist"/>
 
         <!-- Правая кнопка -->
         <ImageButton
