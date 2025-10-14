@@ -53,9 +53,9 @@ class AudioPlayerActivity : AppCompatActivity() {
             // Glide с placeholder и плавной анимацией
             Glide.with(this@AudioPlayerActivity)
                 .load(track.getCoverArtwork())
-                .placeholder(R.drawable.placeholder_cover) // показывается во время загрузки
-                .error(R.drawable.placeholder_cover)       // если ошибка загрузки
-                .fallback(R.drawable.placeholder_cover)    // если ссылка вообще null
+                .placeholder(R.drawable.ic_placeholder1) // показывается во время загрузки
+                .error(R.drawable.ic_placeholder1)       // если ошибка загрузки
+                .fallback(R.drawable.ic_placeholder1)    // если ссылка вообще null
                 .transition(DrawableTransitionOptions.withCrossFade(300))
                 .centerCrop()
                 .into(coverImageView)
