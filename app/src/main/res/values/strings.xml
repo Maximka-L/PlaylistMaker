@@ -31,7 +31,6 @@
     <string name="country">Страна</string>
     <string name="genre">Жанр</string>
 
-    <!-- Добавьте эти строки для AudioPlayer -->
     <string name="unknown_album">Неизвестный альбом</string>
     <string name="unknown_year">Неизвестно</string>
     <string name="unknown_genre">Неизвестно</string>

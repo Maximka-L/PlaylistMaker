@@ -25,21 +25,21 @@
             android:contentDescription="@string/back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/icon_back" />
+            app:tint="@color/icon_back"/>
 
         <!-- Обложка -->
         <androidx.cardview.widget.CardView
             android:id="@+id/coverCard"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="26dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginTop="42dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <ImageView
                 android:id="@+id/coverImageView"
@@ -83,28 +83,27 @@
             android:id="@+id/playButton"
             android:layout_width="88dp"
             android:layout_height="88dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginStart="55dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="55dp"
             android:background="@android:color/transparent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/favoriteButton"
+            app:layout_constraintStart_toEndOf="@+id/addToPlaylistButton"
             app:layout_constraintTop_toBottomOf="@id/artistNameTextView"
             app:srcCompat="@drawable/ic_play"
             app:tint="@color/play_icon_color" />
 
         <!-- Левая кнопка -->
-        <ImageButton
+        <ImageView
             android:id="@+id/addToPlaylistButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="55dp"
-            android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="@id/playButton"
-            app:layout_constraintEnd_toStartOf="@+id/playButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/playButton"
-            app:srcCompat="@drawable/ic_add_playlist"
-            app:tint="@color/mini_icon_color" />
+            android:src="@drawable/test2"/>
 
         <!-- Правая кнопка -->
         <ImageButton
@@ -116,10 +115,8 @@
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="@id/playButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/playButton"
             app:layout_constraintTop_toTopOf="@id/playButton"
-            app:srcCompat="@drawable/ic_favorite"
-            app:tint="@color/mini_icon_color" />
+            app:srcCompat="@drawable/ic_favorite"/>
 
         <!-- Текущее время -->
         <TextView
