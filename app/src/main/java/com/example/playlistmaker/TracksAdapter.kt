@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.utils.dpToPx
 
 class TracksAdapter(
     private var dataset: List<Track>,
@@ -31,10 +30,10 @@ class TracksAdapter(
                 .load(track.artworkUrl100)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.ic_placeholder)
-                .transform(RoundedCorners(itemView.dpToPx(itemView.resources.getDimension(R.dimen.corner_radius_small))))
+                .transform(RoundedCorners(itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_small)))
                 .into(ivArtwork)
 
-            // 🔹 добавляем обработку клика
+            // Обработка клика
             itemView.setOnClickListener {
                 onItemClick(track)
             }

@@ -25,4 +25,17 @@
     <string name="track_name">Название трека</string>
     <string name="artist_name">Исполнитель</string>
     <string name="track_duration">Длительность</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="country">Страна</string>
+    <string name="genre">Жанр</string>
+
+    <string name="unknown_album">Неизвестный альбом</string>
+    <string name="unknown_year">Неизвестно</string>
+    <string name="unknown_genre">Неизвестно</string>
+    <string name="unknown_country">Неизвестно</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="play">Воспроизвести</string>
+    <string name="favorite">В избранное</string>
 </resources>

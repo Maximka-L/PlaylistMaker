@@ -36,6 +36,10 @@
     <color name="search">#AEAFB4</color>
     <color name="clear">#AEAFB4</color>
     <color name="textColor">#FFFFFF</color>
+    <color name="play_icon_color">#1A1B22</color>
+    <color name="mini_icon_color">#1A1B22</color>
+    <color name="yn_color">#1A1B22</color>
+    <color name="albumTextView">#AEAFB4</color>
 
 
 

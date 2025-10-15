@@ -35,6 +35,10 @@
     <color name="search">#1A1B22</color>
     <color name="clear">#1A1B22</color>
     <color name="textColor">#1A1B22</color>
+    <color name="play_icon_color">#FFFFFF</color>
+    <color name="mini_icon_color">#FFFFFF</color>
+    <color name="yn_color">#FFFFFF</color>
+    <color name="albumTextView">#AEAFB4</color>
 
 
 </resources>
