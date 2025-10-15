@@ -35,7 +35,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="26dp"
             android:layout_marginEnd="24dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -123,23 +123,25 @@
             android:id="@+id/currentTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="55dp"
             android:text="0:00"
             android:textColor="@color/yn_color"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/playButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/playButton" />
 
         <!-- Инфо -->
         <LinearLayout
             android:id="@+id/infoContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -149,16 +151,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
+
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="@string/duration"
-                    android:textColor="#999999" />
+                    android:textColor="@color/albumTextView" />
 
                 <TextView
                     android:id="@+id/trackDurationTextView"
@@ -180,13 +183,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="@string/album"
-                    android:textColor="#999999" />
+                    android:textColor="@color/albumTextView" />
 
                 <TextView
                     android:id="@+id/albumTextView"
                     android:layout_width="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="Yesterday (Remastered 2009)"
@@ -204,14 +209,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="@string/year"
-                    android:textColor="#999999" />
+                    android:textColor="@color/albumTextView" />
 
                 <TextView
                     android:id="@+id/yearTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="1965"
                     android:textColor="@color/yn_color" />
@@ -228,14 +235,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="@string/genre"
-                    android:textColor="#999999" />
+                    android:textColor="@color/albumTextView" />
 
                 <TextView
                     android:id="@+id/genreTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="Rock"
                     android:textColor="@color/yn_color" />
@@ -254,12 +263,14 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="@string/country"
-                    android:textColor="#999999" />
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/albumTextView" />
 
                 <TextView
                     android:id="@+id/countryTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/ys_display_medium"
                     android:text="Великобритания"
                     android:textColor="@color/yn_color" />
