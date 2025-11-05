@@ -81,7 +81,7 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = TracksAdapter(searchHistory.getHistory()) { track ->
             val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < 1000) return@TracksAdapter // debounce кликов
+            if (currentTime - lastClickTime < 1000) return@TracksAdapter
             lastClickTime = currentTime
 
             searchHistory.addTrack(track)
@@ -93,7 +93,7 @@ class SearchActivity : AppCompatActivity() {
 
         toolbar.setNavigationOnClickListener { finish() }
 
-        // Очистка поля поиска
+
         clearButton.setOnClickListener {
             searchEditText.text.clear()
             searchEditText.clearFocus()
@@ -102,13 +102,13 @@ class SearchActivity : AppCompatActivity() {
             showHistory()
         }
 
-        // Очистка истории
+
         clearHistoryButton.setOnClickListener {
             searchHistory.clearHistory()
             showHistory()
         }
 
-        // Реакция на изменения текста (с debounce)
+
         searchEditText.doOnTextChanged { text, _, _, _ ->
             val query = text?.toString()?.trim().orEmpty()
             clearButton.isVisible = query.isNotEmpty()
@@ -126,7 +126,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        // Поиск при нажатии Enter
+
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = searchEditText.text.toString().trim()
@@ -135,7 +135,7 @@ class SearchActivity : AppCompatActivity() {
             } else false
         }
 
-        // Проверка сети при старте
+
         if (!isNetworkAvailable()) {
             showEmptyState(
                 true,
