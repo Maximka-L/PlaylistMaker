@@ -2,6 +2,8 @@ package com.example.playlistmaker
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -14,12 +16,21 @@ class AudioPlayerActivity : AppCompatActivity() {
     private var isPlaying = false
     private var currentTrack: Track? = null
 
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateTimeRunnable = object : Runnable {
+        override fun run() {
+            val currentPosition = mediaPlayer?.currentPosition ?: 0
+            binding.currentTimeTextView.text = formatTime(currentPosition)
+            handler.postDelayed(this, 1000)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Получаем трек из Intent
         currentTrack = intent.getParcelableExtra("track")
 
         if (currentTrack != null) {
@@ -29,15 +40,9 @@ class AudioPlayerActivity : AppCompatActivity() {
             return
         }
 
-        // Кнопка "Назад"
-        binding.toolbar.setOnClickListener {
-            finish()
-        }
+        binding.toolbar.setOnClickListener { finish() }
 
-        // Кнопка "Play"
-        binding.playButton.setOnClickListener {
-            startPlayback()
-        }
+        binding.playButton.setOnClickListener { togglePlayback() }
     }
 
     private fun showTrackInfo(track: Track) {
@@ -50,7 +55,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             genreTextView.text = track.primaryGenreName ?: getString(R.string.unknown_genre)
             countryTextView.text = track.country ?: getString(R.string.unknown_country)
 
-            // Glide с placeholder и плавной анимацией
             Glide.with(this@AudioPlayerActivity)
                 .load(track.getCoverArtwork())
                 .placeholder(R.drawable.ic_placeholder1)
@@ -62,9 +66,72 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun startPlayback() {
+    private fun togglePlayback() {
         val track = currentTrack ?: return
+        val url = track.previewUrl ?: return
 
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(url)
+                prepareAsync()
+                setOnPreparedListener {
+                    start()
+                    binding.playButton.setImageResource(R.drawable.ic_pause)
+                    startUpdatingTime()
+                }
+                setOnCompletionListener {
+                    stopUpdatingTime()
+                    binding.playButton.setImageResource(R.drawable.ic_play)
+                    binding.currentTimeTextView.text = "00:00"
+                }
+            }
+        } else {
+            if (isPlaying) {
+                pausePlayback()
+            } else {
+                resumePlayback()
+            }
+        }
+    }
 
+    private fun pausePlayback() {
+        mediaPlayer?.pause()
+        isPlaying = false
+        stopUpdatingTime()
+        binding.playButton.setImageResource(R.drawable.ic_play)
+    }
+
+    private fun resumePlayback() {
+        mediaPlayer?.start()
+        isPlaying = true
+        startUpdatingTime()
+        binding.playButton.setImageResource(R.drawable.ic_pause)
+    }
+
+    private fun formatTime(ms: Int): String {
+        val totalSeconds = ms / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
+
+    private fun startUpdatingTime() {
+        handler.post(updateTimeRunnable)
+    }
+
+    private fun stopUpdatingTime() {
+        handler.removeCallbacks(updateTimeRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (isPlaying) pausePlayback()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopUpdatingTime()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }
