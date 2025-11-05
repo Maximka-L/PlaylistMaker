@@ -22,7 +22,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         override fun run() {
             val currentPosition = mediaPlayer?.currentPosition ?: 0
             binding.currentTimeTextView.text = formatTime(currentPosition)
-            handler.postDelayed(this, 1000)
+            handler.postDelayed(this, UPDATE_DELAY_MS)
         }
     }
 
@@ -82,7 +82,8 @@ class AudioPlayerActivity : AppCompatActivity() {
                 setOnCompletionListener {
                     stopUpdatingTime()
                     binding.playButton.setImageResource(R.drawable.ic_play)
-                    binding.currentTimeTextView.text = "00:00"
+                    binding.currentTimeTextView.text = getString(R.string.time_zero)
+
                 }
             }
         } else {
@@ -122,6 +123,12 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun stopUpdatingTime() {
         handler.removeCallbacks(updateTimeRunnable)
     }
+
+    private companion object {
+        private const val UPDATE_DELAY_MS = 500L
+
+    }
+
 
     override fun onPause() {
         super.onPause()

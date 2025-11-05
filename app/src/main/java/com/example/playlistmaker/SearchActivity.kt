@@ -29,6 +29,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+private const val CLICK_DEBOUNCE_DELAY = 1000L
+
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
@@ -81,7 +83,7 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = TracksAdapter(searchHistory.getHistory()) { track ->
             val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < 1000) return@TracksAdapter
+            if (currentTime - lastClickTime < CLICK_DEBOUNCE_DELAY) return@TracksAdapter
             lastClickTime = currentTime
 
             searchHistory.addTrack(track)
@@ -121,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             searchJob = lifecycleScope.launch {
-                delay(2000L) // debounce 2 секунды
+                delay(2000L)
                 performSearch(query)
             }
         }
@@ -191,6 +193,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun performSearch(query: String) {
         searchQuery = query
+        showEmptyState(false)
         showLoading(true)
 
         lifecycleScope.launch {
@@ -199,23 +202,31 @@ class SearchActivity : AppCompatActivity() {
                 val tracks = response.results.map { it.toTrack() }
 
                 if (tracks.isEmpty()) {
+
+                    adapter.updateDataset(emptyList())
                     showEmptyState(true, "Ничего не нашлось")
                 } else {
+
                     adapter.updateDataset(tracks)
-                    adapter.notifyDataSetChanged()
-                    recycler.isVisible = true
-                    historyBlock.isVisible = false
                     showEmptyState(false)
                 }
+
+                adapter.notifyDataSetChanged()
+
             } catch (e: IOException) {
+
+                adapter.updateDataset(searchHistory.getHistory())
                 showEmptyState(
                     true,
-                    "Проблемы со связью\nПроверьте подключение к интернету",
+                    "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
                     showButton = true
                 )
+
             } finally {
-                showLoading(false)
+
+                progressBar.isVisible = false
             }
         }
     }
+
 }
