@@ -11,6 +11,7 @@ data class TrackDto(
     val collectionName: String? = null,
     val releaseDate: String? = null,
     val primaryGenreName: String? = null,
+    val previewUrl: String?= null,
     val country: String? = null
 )
 
@@ -28,10 +29,11 @@ fun TrackDto.toTrack(): Track {
         artistName = artistName,
         trackTime = minutes,
         artworkUrl100 = artworkUrl100,
-        // ПЕРЕДАЙТЕ ВСЕ ПОЛЯ В Track:
+        previewUrl = previewUrl,
         collectionName = collectionName,
         releaseDate = releaseDate,
         primaryGenreName = primaryGenreName,
         country = country
+
     )
 }

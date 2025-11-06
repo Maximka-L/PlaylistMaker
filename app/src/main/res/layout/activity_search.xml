@@ -5,8 +5,8 @@
     android:id="@+id/searchRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/background"
+    android:orientation="vertical"
     tools:context=".SearchActivity">
 
     <!-- Toolbar -->
@@ -18,7 +18,7 @@
         app:navigationIconTint="@color/icon_back"
         app:title="@string/search" />
 
-    <!-- Поле поиска + кнопка очистки -->
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="36dp"
@@ -33,14 +33,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
+            android:drawableStart="@drawable/sssector"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/search"
             android:hint="@string/search"
             android:inputType="text"
             android:maxLines="1"
             android:textColor="@color/search_text"
-            android:textColorHint="@color/search"
-            android:drawableStart="@drawable/sssector"
-            android:drawablePadding="8dp"
-            android:drawableTint="@color/search" />
+            android:textColorHint="@color/search" />
 
         <ImageView
             android:id="@+id/clearButton"
@@ -53,7 +53,20 @@
 
     </FrameLayout>
 
-    <!-- Блок истории поиска (ВОТ ОН - видим по умолчанию) -->
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="45dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="140dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/primary"
+        android:visibility="visible" />
+
+
+
     <LinearLayout
         android:id="@+id/historyBlock"
         android:layout_width="match_parent"
@@ -68,9 +81,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="@dimen/margin_medium"
+            android:fontFamily="@font/ys_display_medium"
             android:gravity="center"
             android:text="@string/history_title"
-            android:fontFamily="@font/ys_display_medium"
             android:textColor="?android:textColorPrimary"
             android:textSize="@dimen/text_size_medium" />
 
@@ -95,7 +108,7 @@
 
     </LinearLayout>
 
-    <!-- Блок пустого состояния (скрыт по умолчанию) -->
+
     <LinearLayout
         android:id="@+id/infoblock"
         android:layout_width="match_parent"
@@ -126,14 +139,14 @@
             style="@style/ButtonSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="?android:textColorPrimary"
             android:text="Обновить"
             android:textColor="@color/textColor"
-            android:backgroundTint="?android:textColorPrimary"
             app:cornerRadius="20dp" />
 
     </LinearLayout>
 
-    <!-- Блок результатов поиска (скрыт по умолчанию) -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecycler"
         android:layout_width="match_parent"
