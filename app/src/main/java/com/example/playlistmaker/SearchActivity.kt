@@ -175,7 +175,7 @@ class SearchActivity : AppCompatActivity() {
         progressBar.isVisible = false
 
         if (show) {
-            emptyIcon.setImageResource(if (showButton) R.drawable.not_int else R.drawable.light_mode)
+            emptyIcon.setImageResource(if (showButton) R.drawable.ic_not_int else R.drawable.ic_light_mode)
             emptyText.text = text
         }
     }

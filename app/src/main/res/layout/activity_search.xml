@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
-            android:drawableStart="@drawable/sssector"
+            android:drawableStart="@drawable/ic_sssector"
             android:drawablePadding="8dp"
             android:drawableTint="@color/search"
             android:hint="@string/search"
