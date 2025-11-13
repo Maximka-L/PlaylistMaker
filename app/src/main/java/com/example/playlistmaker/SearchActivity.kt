@@ -21,8 +21,9 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.utils.NetworkClient
-import com.example.playlistmaker.utils.toTrack
+import com.example.playlistmaker.data.network.NetworkClient
+import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -46,7 +47,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var historyBlock: LinearLayout
 
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var manageSearchHistoryUseCase: ManageSearchHistoryUseCase
+    private lateinit var searchTracksUseCase: SearchTracksUseCase
     private lateinit var adapter: TracksAdapter
 
     private var searchQuery = ""
@@ -77,16 +79,16 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         historyBlock = findViewById(R.id.historyBlock)
 
-        searchHistory = SearchHistory(
-            applicationContext.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE)
-        )
+        manageSearchHistoryUseCase = Creator.provideManageSearchHistoryUseCase(this)
+        searchTracksUseCase = Creator.provideSearchTracksUseCase(this)
 
-        adapter = TracksAdapter(searchHistory.getHistory()) { track ->
+
+        adapter = TracksAdapter(manageSearchHistoryUseCase.getHistory()) { track ->
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime < CLICK_DEBOUNCE_DELAY) return@TracksAdapter
             lastClickTime = currentTime
 
-            searchHistory.addTrack(track)
+            manageSearchHistoryUseCase.addTrack(track)
             val intent = Intent(this@SearchActivity, AudioPlayerActivity::class.java)
             intent.putExtra("track", track)
             startActivity(intent)
@@ -106,7 +108,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         clearHistoryButton.setOnClickListener {
-            searchHistory.clearHistory()
+            manageSearchHistoryUseCase.clearHistory()
             showHistory()
         }
 
@@ -151,7 +153,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showHistory() {
-        val history = searchHistory.getHistory()
+        val history = manageSearchHistoryUseCase.getHistory()
         adapter.updateDataset(history)
         adapter.notifyDataSetChanged()
 
@@ -199,7 +201,7 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val response = NetworkClient.api.searchSongs(query)
-                val tracks = response.results.map { it.toTrack() }
+                val tracks = searchTracksUseCase.execute(query)
 
                 if (tracks.isEmpty()) {
 
@@ -215,7 +217,7 @@ class SearchActivity : AppCompatActivity() {
 
             } catch (e: IOException) {
 
-                adapter.updateDataset(searchHistory.getHistory())
+                adapter.updateDataset(manageSearchHistoryUseCase.getHistory())
                 showEmptyState(
                     true,
                     "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
