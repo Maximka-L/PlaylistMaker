@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingHorizontal="16dp"
     android:paddingBottom="20dp"
-    tools:context=".MainActivity">
+    tools:context=".presentation.main.MainActivity">
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar

@@ -1,10 +1,9 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import com.example.playlistmaker.data.local.LocalStorage
 import com.example.playlistmaker.data.local.SearchHistoryStorage
 import com.example.playlistmaker.data.network.NetworkClient
-import com.example.playlistmaker.domain.repository.TrackRepositoryImpl
+import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 
@@ -21,9 +20,9 @@ object Creator {
     }
 
     private fun provideRepository(context: Context): TrackRepositoryImpl {
+        val sharedPrefs = context.getSharedPreferences("APP_STORAGE", Context.MODE_PRIVATE)
+        val historyStorage = SearchHistoryStorage(sharedPrefs)
         val networkClient = NetworkClient
-        val localStorage = LocalStorage(context)
-        val historyStorage = SearchHistoryStorage(localStorage.sharedPrefs)
         return TrackRepositoryImpl(networkClient, historyStorage)
     }
 }

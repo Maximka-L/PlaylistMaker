@@ -1,13 +1,19 @@
 package com.example.playlistmaker.domain.usecase
 
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.repository.TrackRepository
+import com.example.playlistmaker.data.repository.TrackRepository
 
-class ManageSearchHistoryUseCase(private val repository: TrackRepository) {
+interface IManageSearchHistoryUseCase {
+    fun getHistory(): List<Track>
+    fun addTrack(track: Track)
+    fun clearHistory()
+}
 
-    fun getHistory(): List<Track> = repository.getSearchHistory()
+class ManageSearchHistoryUseCase(
+    private val repository: TrackRepository
+) : IManageSearchHistoryUseCase {
 
-    fun addTrack(track: Track) = repository.addToHistory(track)
-
-    fun clearHistory() = repository.clearHistory()
+    override fun getHistory() = repository.getHistory()
+    override fun addTrack(track: Track) = repository.addTrack(track)
+    override fun clearHistory() = repository.clearHistory()
 }
