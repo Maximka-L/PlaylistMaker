@@ -25,6 +25,7 @@ import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import com.example.playlistmaker.presentation.player.AudioPlayerActivity
+import com.example.playlistmaker.presentation.search.adapter.TracksAdapter
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
