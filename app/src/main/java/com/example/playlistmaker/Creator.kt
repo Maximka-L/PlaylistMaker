@@ -6,12 +6,13 @@ import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import com.example.playlistmaker.domain.usecase.impl.SearchTracksUseCaseImpl
 
 object Creator {
 
     fun provideSearchTracksUseCase(context: Context): SearchTracksUseCase {
         val repository = provideRepository(context)
-        return SearchTracksUseCase(repository)
+        return SearchTracksUseCaseImpl(repository)
     }
 
     fun provideManageSearchHistoryUseCase(context: Context): ManageSearchHistoryUseCase {

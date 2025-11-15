@@ -3,6 +3,7 @@ package com.example.playlistmaker.data.repository
 import com.example.playlistmaker.data.dto.SearchResponse
 import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.repository.TrackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
