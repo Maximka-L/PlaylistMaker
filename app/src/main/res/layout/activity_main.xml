@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingHorizontal="16dp"
     android:paddingBottom="20dp"
-    tools:context=".MainActivity">
+    tools:context=".presentation.main.MainActivity">
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
@@ -30,20 +30,20 @@
         style="@style/ButtonStyle"
         android:id="@+id/searchButton"
         android:text="@string/search"
-        app:icon="@drawable/sssector"/>
+        app:icon="@drawable/ic_sssector"/>
 
         <!-- Кнопка медиатеки -->
         <com.google.android.material.button.MaterialButton
             style="@style/ButtonStyle"
             android:id="@+id/mediaButton"
             android:text="@string/media_library"
-            app:icon="@drawable/mediya" />
+            app:icon="@drawable/ic_mediya" />
 
         <!-- Кнопка настроек -->
         <com.google.android.material.button.MaterialButton
             style="@style/ButtonStyle"
             android:id="@+id/settingsButton"
             android:text="@string/settings"
-            app:icon="@drawable/set"/>
+            app:icon="@drawable/ic_set"/>
     </LinearLayout>
 </LinearLayout>

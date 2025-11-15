@@ -1,4 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.main
+
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -6,7 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import com.example.playlistmaker.presentation.media.MediaActivity
+import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.search.SearchActivity
+import com.example.playlistmaker.presentation.setting.SettingsActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -25,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { view, insets ->
             val statusBar =
-                insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+                insets.getInsets(WindowInsetsCompat.Type.statusBars())
             view.updatePadding(top = statusBar.top)
             insets
         }

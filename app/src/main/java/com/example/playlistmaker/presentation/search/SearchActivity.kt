@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -21,17 +21,19 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.utils.NetworkClient
-import com.example.playlistmaker.utils.toTrack
+import com.example.playlistmaker.data.network.NetworkClient
+import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-private const val CLICK_DEBOUNCE_DELAY = 1000L
+private const val CLICK_DEBOUNCE_DELAY = 800L
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : androidx.appcompat.app.AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
@@ -46,7 +48,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var historyBlock: LinearLayout
 
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var manageSearchHistoryUseCase: ManageSearchHistoryUseCase
+    private lateinit var searchTracksUseCase: SearchTracksUseCase
     private lateinit var adapter: TracksAdapter
 
     private var searchQuery = ""
@@ -56,41 +59,45 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
+        setContentView(_root_ide_package_.com.example.playlistmaker.R.layout.activity_search)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.searchRoot)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(_root_ide_package_.com.example.playlistmaker.R.id.searchRoot)) { view, insets ->
             view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top)
             insets
         }
 
         // Инициализация вьюшек
-        toolbar = findViewById(R.id.toolbar)
-        searchEditText = findViewById(R.id.searchEditText)
-        clearButton = findViewById(R.id.clearButton)
-        infoBlock = findViewById(R.id.infoblock)
-        emptyIcon = findViewById(R.id.empty_icon)
-        emptyText = findViewById(R.id.empty_text)
-        emptyButton = findViewById(R.id.empty_button)
-        youSearchedText = findViewById(R.id.youserchs)
-        clearHistoryButton = findViewById(R.id.clear_histors)
-        recycler = findViewById(R.id.recycler)
-        progressBar = findViewById(R.id.progressBar)
-        historyBlock = findViewById(R.id.historyBlock)
+        toolbar = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.toolbar)
+        searchEditText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.searchEditText)
+        clearButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.clearButton)
+        infoBlock = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.infoblock)
+        emptyIcon = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_icon)
+        emptyText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_text)
+        emptyButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_button)
+        youSearchedText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.youserchs)
+        clearHistoryButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.clear_histors)
+        recycler = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.recycler)
+        progressBar = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.progressBar)
+        historyBlock = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.historyBlock)
 
-        searchHistory = SearchHistory(
-            applicationContext.getSharedPreferences("DEFAULT", Context.MODE_PRIVATE)
-        )
+        manageSearchHistoryUseCase = _root_ide_package_.com.example.playlistmaker.Creator.provideManageSearchHistoryUseCase(this)
+        searchTracksUseCase = _root_ide_package_.com.example.playlistmaker.Creator.provideSearchTracksUseCase(this)
 
-        adapter = TracksAdapter(searchHistory.getHistory()) { track ->
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < CLICK_DEBOUNCE_DELAY) return@TracksAdapter
-            lastClickTime = currentTime
 
-            searchHistory.addTrack(track)
-            val intent = Intent(this@SearchActivity, AudioPlayerActivity::class.java)
-            intent.putExtra("track", track)
-            startActivity(intent)
-        }
+        adapter =
+            TracksAdapter(manageSearchHistoryUseCase.getHistory()) { track ->
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime < CLICK_DEBOUNCE_DELAY) return@TracksAdapter
+                lastClickTime = currentTime
+
+                manageSearchHistoryUseCase.addTrack(track)
+                val intent = Intent(
+                    this@SearchActivity,
+                    AudioPlayerActivity::class.java
+                )
+                intent.putExtra("track", track)
+                startActivity(intent)
+            }
         recycler.adapter = adapter
 
         toolbar.setNavigationOnClickListener { finish() }
@@ -106,7 +113,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         clearHistoryButton.setOnClickListener {
-            searchHistory.clearHistory()
+            manageSearchHistoryUseCase.clearHistory()
             showHistory()
         }
 
@@ -151,9 +158,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showHistory() {
-        val history = searchHistory.getHistory()
+        val history = manageSearchHistoryUseCase.getHistory()
         adapter.updateDataset(history)
-        adapter.notifyDataSetChanged()
+
 
         historyBlock.isVisible = history.isNotEmpty()
         recycler.isVisible = history.isNotEmpty()
@@ -173,7 +180,7 @@ class SearchActivity : AppCompatActivity() {
         progressBar.isVisible = false
 
         if (show) {
-            emptyIcon.setImageResource(if (showButton) R.drawable.not_int else R.drawable.light_mode)
+            emptyIcon.setImageResource(if (showButton) _root_ide_package_.com.example.playlistmaker.R.drawable.ic_not_int else _root_ide_package_.com.example.playlistmaker.R.drawable.ic_light_mode)
             emptyText.text = text
         }
     }
@@ -182,7 +189,7 @@ class SearchActivity : AppCompatActivity() {
         progressBar.isVisible = show
         historyBlock.isVisible = !show
         recycler.isVisible = !show
-        infoBlock.isVisible = !show
+        infoBlock.isVisible = false
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -198,8 +205,8 @@ class SearchActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = NetworkClient.api.searchSongs(query)
-                val tracks = response.results.map { it.toTrack() }
+
+                val tracks = searchTracksUseCase.execute(query)
 
                 if (tracks.isEmpty()) {
 
@@ -215,7 +222,7 @@ class SearchActivity : AppCompatActivity() {
 
             } catch (e: IOException) {
 
-                adapter.updateDataset(searchHistory.getHistory())
+                adapter.updateDataset(manageSearchHistoryUseCase.getHistory())
                 showEmptyState(
                     true,
                     "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",

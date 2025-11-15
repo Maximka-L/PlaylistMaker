@@ -1,10 +1,11 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.local
 
 import android.content.SharedPreferences
+import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistory(private val sharedPrefs: SharedPreferences) {
+class SearchHistoryStorage(private val sharedPrefs: SharedPreferences) {
 
     private val gson = Gson()
     private val key = "search_history2"
@@ -17,17 +18,11 @@ class SearchHistory(private val sharedPrefs: SharedPreferences) {
 
     fun addTrack(track: Track) {
         val history = getHistory().toMutableList()
-
         history.removeAll { it.trackId == track.trackId }
         history.add(0, track)
-
-        if (history.size > 10) {
-            history.removeAt(history.size - 1)
-        }
-
+        if (history.size > 10) history.removeAt(history.size - 1)
         saveHistory(ArrayList(history))
     }
-
 
     fun clearHistory() {
         sharedPrefs.edit().remove(key).apply()

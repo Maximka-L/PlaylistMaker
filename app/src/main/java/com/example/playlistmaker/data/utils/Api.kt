@@ -1,6 +1,6 @@
-package com.example.playlistmaker.utils
+package com.example.playlistmaker.data.utils
 
-import com.example.playlistmaker.Track
+import com.example.playlistmaker.domain.models.Track
 
 data class TrackDto(
     val trackId: Int,
