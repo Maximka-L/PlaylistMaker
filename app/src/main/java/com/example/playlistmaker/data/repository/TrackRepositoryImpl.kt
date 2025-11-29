@@ -1,8 +1,11 @@
 package com.example.playlistmaker.data.repository
 
 import com.example.playlistmaker.data.dto.SearchResponse
+import com.example.playlistmaker.data.dto.TrackDto
+import com.example.playlistmaker.data.local.SearchHistoryStorage
 import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.models.Track
+
 import com.example.playlistmaker.domain.repository.TrackRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,32 +14,30 @@ import java.io.IOException
 
 class TrackRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val localStorage: com.example.playlistmaker.data.local.SearchHistoryStorage
+    private val localStorage: SearchHistoryStorage
 ) : TrackRepository {
 
     override suspend fun searchTracks(query: String): List<Track> = withContext(Dispatchers.IO) {
+        if (!networkClient.isConnected()) {
+            println("NO INTERNET")
+            return@withContext emptyList()
+        }
+
         try {
-            val response: SearchResponse = networkClient.api.searchSongs(query)
-            response.results.map { dto ->
-                Track(
-                    trackId = dto.trackId,
-                    trackName = dto.trackName,
-                    artistName = dto.artistName,
-                    trackTime = formatTrackTime(dto.trackTimeMillis),
-                    artworkUrl100 = dto.artworkUrl100,
-                    collectionName = dto.collectionName,
-                    releaseDate = dto.releaseDate,
-                    primaryGenreName = dto.primaryGenreName,
-                    country = dto.country,
-                    previewUrl = dto.previewUrl
-                )
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            emptyList()
-        } catch (e: HttpException) {
-            e.printStackTrace()
-            emptyList()
+            val response = networkClient.api.searchSongs(query.trim())
+
+            println("DTO SIZE: ${response.results.size}")
+            println("FIRST TRACK: ${response.results.firstOrNull()?.trackName}")
+
+            val mapped = response.results.map { dto -> dto.toDomain() }
+
+            println("MAPPED SIZE: ${mapped.size}")
+
+            return@withContext mapped
+
+        } catch (e: Exception) {
+            println("ERROR IN REPOSITORY: $e")
+            return@withContext emptyList()
         }
     }
 
@@ -46,9 +47,23 @@ class TrackRepositoryImpl(
 
     override fun clearHistory() = localStorage.clearHistory()
 
-    private fun formatTrackTime(trackTimeMillis: Long): String {
-        val minutes = (trackTimeMillis / 1000) / 60
-        val seconds = (trackTimeMillis / 1000) % 60
-        return String.format("%d:%02d", minutes, seconds)
+    private fun TrackDto.toDomain(): Track {
+        val totalSeconds = (trackTimeMillis / 1000).toInt()
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        val formattedTime = String.format("%d:%02d", minutes, seconds)
+
+        return Track(
+            trackId = trackId,
+            trackName = trackName,
+            artistName = artistName,
+            trackTime = formattedTime,
+            artworkUrl100 = artworkUrl100,
+            collectionName = collectionName,
+            releaseDate = releaseDate,
+            primaryGenreName = primaryGenreName,
+            previewUrl = previewUrl,
+            country = country
+        )
     }
 }

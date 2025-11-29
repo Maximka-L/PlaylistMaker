@@ -55,7 +55,7 @@ class TracksAdapter(
     override fun getItemCount(): Int = dataset.size
 
     fun updateDataset(dataset: List<Track>) {
-        notifyDataSetChanged()
         this.dataset = dataset
+        notifyDataSetChanged()
     }
 }

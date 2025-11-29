@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="24dp">
 
-        <!-- Назад -->
+
         <ImageView
             android:id="@+id/toolbar"
             android:layout_width="wrap_content"
