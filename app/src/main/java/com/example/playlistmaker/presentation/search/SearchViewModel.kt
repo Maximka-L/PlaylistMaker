@@ -23,14 +23,12 @@ class SearchViewModel(
     private val _state = MutableLiveData<SearchScreenState>()
     val state: LiveData<SearchScreenState> = _state
 
-
     private val _openTrackEvent = MutableLiveData<Track>()
     val openTrackEvent: LiveData<Track> = _openTrackEvent
 
     private var searchJob: Job? = null
     private var lastClickTime = 0L
     private var currentQuery: String = ""
-
 
     fun onScreenOpened(isNetworkAvailable: Boolean) {
         if (!isNetworkAvailable) {

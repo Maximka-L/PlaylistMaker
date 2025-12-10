@@ -38,11 +38,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var emptyButton: MaterialButton
     private lateinit var youSearchedText: TextView
     private lateinit var clearHistoryButton: MaterialButton
-    private lateinit var recycler: RecyclerView
+
+    private lateinit var historyRecycler: RecyclerView
+    private lateinit var searchResultsRecycler: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var historyBlock: LinearLayout
 
-    private lateinit var adapter: TracksAdapter
+    private lateinit var historyAdapter: TracksAdapter
+    private lateinit var searchResultsAdapter: TracksAdapter
 
     private val viewModel: SearchViewModel by viewModels {
         SearchViewModelFactory(applicationContext)
@@ -63,7 +66,6 @@ class SearchActivity : AppCompatActivity() {
         initListeners()
         observeViewModel()
 
-
         viewModel.onScreenOpened(isNetworkAvailable())
     }
 
@@ -77,16 +79,26 @@ class SearchActivity : AppCompatActivity() {
         emptyButton = findViewById(R.id.empty_button)
         youSearchedText = findViewById(R.id.youserchs)
         clearHistoryButton = findViewById(R.id.clear_histors)
-        recycler = findViewById(R.id.recycler)
-        progressBar = findViewById(R.id.progressBar)
+
         historyBlock = findViewById(R.id.historyBlock)
+        historyRecycler = findViewById(R.id.recycler)
+        searchResultsRecycler = findViewById(R.id.searchResultsRecycler)
+
+        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun initRecycler() {
-        adapter = TracksAdapter(emptyList()) { track ->
+
+        historyAdapter = TracksAdapter(emptyList()) { track ->
             viewModel.onTrackClicked(track)
         }
-        recycler.adapter = adapter
+        historyRecycler.adapter = historyAdapter
+
+
+        searchResultsAdapter = TracksAdapter(emptyList()) { track ->
+            viewModel.onTrackClicked(track)
+        }
+        searchResultsRecycler.adapter = searchResultsAdapter
     }
 
     private fun initListeners() {
@@ -142,7 +154,6 @@ class SearchActivity : AppCompatActivity() {
             }
             is SearchScreenState.History -> {
                 showHistory(state.tracks)
-
             }
             is SearchScreenState.Content -> {
                 showContent(state.tracks)
@@ -156,32 +167,36 @@ class SearchActivity : AppCompatActivity() {
     private fun showLoading() {
         progressBar.isVisible = true
 
-        recycler.isVisible = false
+
         historyBlock.isVisible = false
+        historyRecycler.isVisible = false
+        searchResultsRecycler.isVisible = false
         infoBlock.isVisible = false
         youSearchedText.isVisible = false
         clearHistoryButton.isVisible = false
     }
 
     private fun showHistory(tracks: List<Track>) {
-        adapter.updateDataset(tracks)
-        adapter.notifyDataSetChanged()
+        historyAdapter.updateDataset(tracks)
+
         val hasHistory = tracks.isNotEmpty()
         historyBlock.isVisible = hasHistory
-        recycler.isVisible = hasHistory
+        historyRecycler.isVisible = hasHistory
         youSearchedText.isVisible = hasHistory
         clearHistoryButton.isVisible = hasHistory
 
+        searchResultsRecycler.isVisible = false
         infoBlock.isVisible = false
         progressBar.isVisible = false
     }
 
     private fun showContent(tracks: List<Track>) {
-        adapter.updateDataset(tracks)
+        searchResultsAdapter.updateDataset(tracks)
 
-        recycler.isVisible = true
-        adapter.notifyDataSetChanged()
+        searchResultsRecycler.isVisible = true
+
         historyBlock.isVisible = false
+        historyRecycler.isVisible = false
         youSearchedText.isVisible = false
         clearHistoryButton.isVisible = false
         infoBlock.isVisible = false
@@ -189,14 +204,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showEmpty(isInternetError: Boolean) {
-        adapter.updateDataset(emptyList())
-        adapter.notifyDataSetChanged()
+
+        searchResultsAdapter.updateDataset(emptyList())
+
         progressBar.isVisible = false
-        recycler.isVisible = false
         historyBlock.isVisible = false
+        historyRecycler.isVisible = false
+        searchResultsRecycler.isVisible = false
         youSearchedText.isVisible = false
         clearHistoryButton.isVisible = false
-
 
         infoBlock.isVisible = true
         emptyIcon.isVisible = true
@@ -204,7 +220,7 @@ class SearchActivity : AppCompatActivity() {
 
         if (isInternetError) {
             emptyIcon.setImageResource(R.drawable.ic_not_int)
-            emptyText.text = "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету"
+            emptyText.text = "Проблемы со связью\n Загрузка не удалась. Проверьте подключение к интернету"
             emptyButton.isVisible = true
         } else {
             emptyIcon.setImageResource(R.drawable.ic_light_mode)
