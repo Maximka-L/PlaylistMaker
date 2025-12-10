@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -11,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
@@ -19,9 +21,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import com.example.playlistmaker.presentation.search.adapter.TracksAdapter
-import com.example.playlistmaker.R
 import com.google.android.material.button.MaterialButton
 
 class SearchActivity : AppCompatActivity() {
@@ -38,11 +41,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var recycler: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var historyBlock: LinearLayout
-    private lateinit var adapter: TracksAdapter
-    private lateinit var viewModel: SearchViewModel
 
-    private var lastClickTime = 0L
-    private val clickDelay = 800L
+    private lateinit var adapter: TracksAdapter
+
+    private val viewModel: SearchViewModel by viewModels {
+        SearchViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,61 +59,12 @@ class SearchActivity : AppCompatActivity() {
         }
 
         initViews()
-        initViewModel()
-        observeState()
+        initRecycler()
+        initListeners()
+        observeViewModel()
 
-        toolbar.setNavigationOnClickListener { finish() }
 
-        clearButton.setOnClickListener {
-            searchEditText.text.clear()
-            hideKeyboard()
-            viewModel.showHistory()
-        }
-
-        clearHistoryButton.setOnClickListener {
-            viewModel.clearHistory()
-        }
-
-        searchEditText.doOnTextChanged { text, _, _, _ ->
-            val query = text.toString().trim()
-            clearButton.isVisible = query.isNotEmpty()
-            viewModel.search(query)
-        }
-
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val query = searchEditText.text.toString().trim()
-                if (query.isNotEmpty()) viewModel.search(query)
-                true
-            } else false
-        }
-
-        viewModel.showHistory()
-    }
-
-    private fun initViewModel() {
-        viewModel = SearchViewModel(
-            com.example.playlistmaker.di.Creator.provideSearchTracksUseCase(this),
-            com.example.playlistmaker.di.Creator.provideManageSearchHistoryUseCase(this)
-        )
-    }
-
-    private fun observeState() {
-        viewModel.state.observe(this) { state ->
-            when (state) {
-                is SearchViewModel.SearchState.Loading -> showLoading(true)
-                is SearchViewModel.SearchState.Content -> {
-                    adapter.updateDataset(state.data)
-                    showEmptyState(false)
-                }
-                is SearchViewModel.SearchState.Empty -> showEmptyState(true, "Ничего не нашлось")
-                is SearchViewModel.SearchState.History -> {
-                    adapter.updateDataset(state.data)
-                    showHistory()
-                }
-                is SearchViewModel.SearchState.Error -> showEmptyState(true, state.message, true)
-            }
-        }
+        viewModel.onScreenOpened(isNetworkAvailable())
     }
 
     private fun initViews() {
@@ -125,60 +80,148 @@ class SearchActivity : AppCompatActivity() {
         recycler = findViewById(R.id.recycler)
         progressBar = findViewById(R.id.progressBar)
         historyBlock = findViewById(R.id.historyBlock)
+    }
 
-        val history =
-            com.example.playlistmaker.di.Creator.provideManageSearchHistoryUseCase(this).getHistory()
-
-        adapter = TracksAdapter(history) { track ->
-            val time = System.currentTimeMillis()
-            if (time - lastClickTime < clickDelay) return@TracksAdapter
-            lastClickTime = time
-
-            viewModel.addToHistory(track)
-            startActivity(
-                Intent(this, AudioPlayerActivity::class.java)
-                    .putExtra("track", track)
-            )
+    private fun initRecycler() {
+        adapter = TracksAdapter(emptyList()) { track ->
+            viewModel.onTrackClicked(track)
         }
-
         recycler.adapter = adapter
     }
 
-    private fun hideKeyboard() {
-        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-            .hideSoftInputFromWindow(searchEditText.windowToken, 0)
+    private fun initListeners() {
+        toolbar.setNavigationOnClickListener { finish() }
+
+        clearButton.setOnClickListener {
+            searchEditText.text.clear()
+            searchEditText.clearFocus()
+            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                .hideSoftInputFromWindow(searchEditText.windowToken, 0)
+            viewModel.onClearSearchClicked()
+        }
+
+        clearHistoryButton.setOnClickListener {
+            viewModel.onClearHistoryClicked()
+        }
+
+        emptyButton.setOnClickListener {
+
+            viewModel.onSearchButtonClicked()
+        }
+
+        searchEditText.doOnTextChanged { text, _, _, _ ->
+            val query = text?.toString().orEmpty()
+            clearButton.isVisible = query.isNotEmpty()
+            viewModel.onSearchTextChanged(query)
+        }
+
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.onSearchButtonClicked()
+                true
+            } else {
+                false
+            }
+        }
     }
 
-    private fun showHistory() {
-        val history = viewModel.getHistory()
-        adapter.updateDataset(history)
+    private fun observeViewModel() {
+        viewModel.state.observe(this) { state ->
+            renderState(state)
+        }
 
+        viewModel.openTrackEvent.observe(this) { track ->
+            openPlayer(track)
+        }
+    }
 
-        historyBlock.isVisible = history.isNotEmpty()
-        recycler.isVisible = history.isNotEmpty()
-        youSearchedText.isVisible = history.isNotEmpty()
-        clearHistoryButton.isVisible = history.isNotEmpty()
+    private fun renderState(state: SearchScreenState) {
+        when (state) {
+            is SearchScreenState.Loading -> {
+                showLoading()
+            }
+            is SearchScreenState.History -> {
+                showHistory(state.tracks)
+
+            }
+            is SearchScreenState.Content -> {
+                showContent(state.tracks)
+            }
+            is SearchScreenState.Empty -> {
+                showEmpty(state.isInternetError)
+            }
+        }
+    }
+
+    private fun showLoading() {
+        progressBar.isVisible = true
+
+        recycler.isVisible = false
+        historyBlock.isVisible = false
+        infoBlock.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+    }
+
+    private fun showHistory(tracks: List<Track>) {
+        adapter.updateDataset(tracks)
+        adapter.notifyDataSetChanged()
+        val hasHistory = tracks.isNotEmpty()
+        historyBlock.isVisible = hasHistory
+        recycler.isVisible = hasHistory
+        youSearchedText.isVisible = hasHistory
+        clearHistoryButton.isVisible = hasHistory
+
         infoBlock.isVisible = false
         progressBar.isVisible = false
     }
 
-    private fun showEmptyState(show: Boolean, text: String = "", button: Boolean = false) {
-        infoBlock.isVisible = show
-        emptyIcon.isVisible = show
-        emptyText.isVisible = show
-        emptyButton.isVisible = button
+    private fun showContent(tracks: List<Track>) {
+        adapter.updateDataset(tracks)
 
-        recycler.isVisible = !show
-        historyBlock.isVisible = !show
+        recycler.isVisible = true
+        adapter.notifyDataSetChanged()
+        historyBlock.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+        infoBlock.isVisible = false
         progressBar.isVisible = false
-
-        if (show) emptyText.text = text
     }
 
-    private fun showLoading(show: Boolean) {
-        progressBar.isVisible = show
-        recycler.isVisible = !show
-        historyBlock.isVisible = !show
-        infoBlock.isVisible = false
+    private fun showEmpty(isInternetError: Boolean) {
+        adapter.updateDataset(emptyList())
+        adapter.notifyDataSetChanged()
+        progressBar.isVisible = false
+        recycler.isVisible = false
+        historyBlock.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+
+
+        infoBlock.isVisible = true
+        emptyIcon.isVisible = true
+        emptyText.isVisible = true
+
+        if (isInternetError) {
+            emptyIcon.setImageResource(R.drawable.ic_not_int)
+            emptyText.text = "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету"
+            emptyButton.isVisible = true
+        } else {
+            emptyIcon.setImageResource(R.drawable.ic_light_mode)
+            emptyText.text = "Ничего не нашлось"
+            emptyButton.isVisible = false
+        }
+    }
+
+    private fun openPlayer(track: Track) {
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        intent.putExtra("track", track)
+        startActivity(intent)
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = cm.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 }

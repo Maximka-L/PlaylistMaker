@@ -8,58 +8,100 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
+
+private const val CLICK_DEBOUNCE_DELAY = 800L
+private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
 class SearchViewModel(
-    private val searchTracks: SearchTracksUseCase,
-    private val history: ManageSearchHistoryUseCase
+    private val searchTracksUseCase: SearchTracksUseCase,
+    private val manageSearchHistoryUseCase: ManageSearchHistoryUseCase
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<SearchState>()
-    val state: LiveData<SearchState> = _state
+    private val _state = MutableLiveData<SearchScreenState>()
+    val state: LiveData<SearchScreenState> = _state
 
-    private var debounceJob: Job? = null
 
-    fun search(query: String) {
-        if (query.isEmpty()) {
+    private val _openTrackEvent = MutableLiveData<Track>()
+    val openTrackEvent: LiveData<Track> = _openTrackEvent
+
+    private var searchJob: Job? = null
+    private var lastClickTime = 0L
+    private var currentQuery: String = ""
+
+
+    fun onScreenOpened(isNetworkAvailable: Boolean) {
+        if (!isNetworkAvailable) {
+            _state.value = SearchScreenState.Empty(isInternetError = true)
+        } else {
+            showHistory()
+        }
+    }
+
+    private fun showHistory() {
+        val history = manageSearchHistoryUseCase.getHistory()
+        _state.value = SearchScreenState.History(history)
+    }
+
+    fun onSearchTextChanged(text: String) {
+        currentQuery = text.trim()
+
+        if (currentQuery.isEmpty()) {
+            searchJob?.cancel()
             showHistory()
             return
         }
 
-        _state.value = SearchState.Loading
-
-        viewModelScope.launch {
-            val result = searchTracks.execute(query)
-
-            if (result.isEmpty())
-                _state.value = SearchState.Empty
-            else
-                _state.value = SearchState.Content(result)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            performSearch(currentQuery)
         }
     }
 
-    fun showHistory() {
-        _state.value = SearchState.History(history.getHistory())
-
+    fun onSearchButtonClicked() {
+        if (currentQuery.isNotEmpty()) {
+            searchJob?.cancel()
+            performSearch(currentQuery)
+        }
     }
 
-    fun clearHistory() {
-        history.clearHistory()
+    fun onClearSearchClicked() {
+        currentQuery = ""
+        searchJob?.cancel()
         showHistory()
     }
 
-    fun addToHistory(track: Track) {
-        history.addTrack(track)
+    fun onClearHistoryClicked() {
+        manageSearchHistoryUseCase.clearHistory()
+        showHistory()
     }
 
-    fun getHistory(): List<Track> = history.getHistory()
+    fun onTrackClicked(track: Track) {
+        val now = System.currentTimeMillis()
+        if (now - lastClickTime < CLICK_DEBOUNCE_DELAY) return
+        lastClickTime = now
 
-    sealed interface SearchState {
-        object Loading : SearchState
-        object Empty : SearchState
-        data class Content(val data: List<Track>) : SearchState
-        data class History(val data: List<Track>) : SearchState
-        data class Error(val message: String) : SearchState
+        manageSearchHistoryUseCase.addTrack(track)
+        _openTrackEvent.value = track
     }
 
+    private fun performSearch(query: String) {
+        viewModelScope.launch {
+            _state.value = SearchScreenState.Loading
+            try {
+                val tracks = searchTracksUseCase.execute(query)
+
+                _state.value = if (tracks.isEmpty()) {
+                    SearchScreenState.Empty(isInternetError = false)
+                } else {
+                    SearchScreenState.Content(tracks)
+                }
+            } catch (e: IOException) {
+                _state.value = SearchScreenState.Empty(isInternetError = true)
+            }
+        }
+    }
 }
