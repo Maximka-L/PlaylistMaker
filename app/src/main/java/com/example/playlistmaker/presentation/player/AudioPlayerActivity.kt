@@ -1,10 +1,12 @@
 package com.example.playlistmaker.presentation.player
 
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.playlistmaker.R
@@ -14,37 +16,62 @@ import com.example.playlistmaker.domain.models.Track
 class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioPlayerBinding
-    private var mediaPlayer: MediaPlayer? = null
-    private var isPlaying = false
+    private lateinit var viewModel: PlayerViewModel
     private var currentTrack: Track? = null
-
-
-    private val handler = Handler(Looper.getMainLooper())
-    private val updateTimeRunnable = object : Runnable {
-        override fun run() {
-            val currentPosition = mediaPlayer?.currentPosition ?: 0
-            binding.currentTimeTextView.text = formatTime(currentPosition)
-            handler.postDelayed(this, UPDATE_DELAY_MS)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        currentTrack = intent.getParcelableExtra("track")
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            v.updatePadding(
+                top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            )
+            insets
+        }
 
-        if (currentTrack != null) {
-            showTrackInfo(currentTrack!!)
-        } else {
+        viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
+
+        currentTrack = intent.getParcelableExtra("track")
+        if (currentTrack == null) {
             finish()
             return
         }
 
-        binding.toolbar.setOnClickListener { finish() }
+        showTrackInfo(currentTrack!!)
 
-        binding.playButton.setOnClickListener { togglePlayback() }
+        val url = currentTrack?.previewUrl
+        if (url != null) {
+            viewModel.prepare(url)
+        }
+
+        setupObservers()
+        setupListeners()
+    }
+
+    private fun setupObservers() {
+        viewModel.time.observe(this) {
+            binding.currentTimeTextView.text = it
+        }
+
+        viewModel.isPlayingLive.observe(this) { playing ->
+            binding.playButton.setImageResource(
+                if (playing) R.drawable.ic_pause else R.drawable.ic_play
+            )
+        }
+    }
+
+    private fun setupListeners() {
+        binding.playButton.setOnClickListener {
+            viewModel.toggle()
+        }
+
+        binding.toolbar.setOnClickListener {
+            finish()
+        }
     }
 
     private fun showTrackInfo(track: Track) {
@@ -66,81 +93,5 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(coverImageView)
         }
-    }
-
-    private fun togglePlayback() {
-        val track = currentTrack ?: return
-        val url = track.previewUrl ?: return
-
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(url)
-                prepareAsync()
-                setOnPreparedListener {
-                    start()
-                    binding.playButton.setImageResource(R.drawable.ic_pause)
-                    startUpdatingTime()
-                }
-                setOnCompletionListener {
-                    stopUpdatingTime()
-                    binding.playButton.setImageResource(R.drawable.ic_play)
-                    binding.currentTimeTextView.text = getString(R.string.time_zero)
-
-                }
-            }
-        } else {
-            if (isPlaying) {
-                pausePlayback()
-            } else {
-                resumePlayback()
-            }
-        }
-    }
-
-    private fun pausePlayback() {
-        mediaPlayer?.pause()
-        isPlaying = false
-        stopUpdatingTime()
-        binding.playButton.setImageResource(R.drawable.ic_play)
-    }
-
-    private fun resumePlayback() {
-        mediaPlayer?.start()
-        isPlaying = true
-        startUpdatingTime()
-        binding.playButton.setImageResource(R.drawable.ic_pause)
-    }
-
-    private fun formatTime(ms: Int): String {
-        val totalSeconds = ms / 1000
-        val minutes = totalSeconds / 60
-        val seconds = totalSeconds % 60
-        return String.format("%02d:%02d", minutes, seconds)
-    }
-
-    private fun startUpdatingTime() {
-        handler.post(updateTimeRunnable)
-    }
-
-    private fun stopUpdatingTime() {
-        handler.removeCallbacks(updateTimeRunnable)
-    }
-
-    private companion object {
-        private const val UPDATE_DELAY_MS = 500L
-
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-        if (isPlaying) pausePlayback()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopUpdatingTime()
-        mediaPlayer?.release()
-        mediaPlayer = null
     }
 }

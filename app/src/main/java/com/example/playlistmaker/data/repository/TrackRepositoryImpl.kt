@@ -15,6 +15,11 @@ class TrackRepositoryImpl(
 ) : TrackRepository {
 
     override suspend fun searchTracks(query: String): List<Track> = withContext(Dispatchers.IO) {
+
+        if (!networkClient.isConnected()){
+            return@withContext emptyList()
+        }
+
         try {
             val response: SearchResponse = networkClient.api.searchSongs(query)
             response.results.map { dto ->

@@ -13,19 +13,22 @@ import androidx.core.view.updatePadding
 import com.example.playlistmaker.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.example.playlistmaker.di.Creator
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: SettingsViewModel
+    private lateinit var darkSwitch: SwitchMaterial
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val isDark = prefs.getBoolean("dark_theme", false)
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
-
         super.onCreate(savedInstanceState)
+
+
+        viewModel = Creator.provideSettingsViewModel(this)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { view, insets ->
             val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -33,19 +36,34 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
 
-        val darkSwitch = findViewById<SwitchMaterial>(R.id.switch_dark)
-        darkSwitch.isChecked = isDark
+
+        darkSwitch = findViewById(R.id.switch_dark)
+
+
+        viewModel.darkTheme.observe(this) { enabled ->
+
+            if (darkSwitch.isChecked != enabled) {
+                darkSwitch.isChecked = enabled
+            }
+
+            AppCompatDelegate.setDefaultNightMode(
+                if (enabled) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
+
 
         darkSwitch.setOnCheckedChangeListener { _, checked ->
-            prefs.edit().putBoolean("dark_theme", checked).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (checked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
-            recreate()
+            viewModel.changeTheme(checked)
+
         }
+
+
+        viewModel.loadTheme()
 
         // Поделиться приложением
         findViewById<LinearLayout>(R.id.row_share).setOnClickListener {

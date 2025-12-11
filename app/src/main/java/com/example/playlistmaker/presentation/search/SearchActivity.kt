@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
@@ -19,22 +20,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.data.network.NetworkClient
-import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
-import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.AudioPlayerActivity
 import com.example.playlistmaker.presentation.search.adapter.TracksAdapter
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.io.IOException
 
-private const val CLICK_DEBOUNCE_DELAY = 800L
-
-class SearchActivity : androidx.appcompat.app.AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
@@ -45,152 +38,201 @@ class SearchActivity : androidx.appcompat.app.AppCompatActivity() {
     private lateinit var emptyButton: MaterialButton
     private lateinit var youSearchedText: TextView
     private lateinit var clearHistoryButton: MaterialButton
-    private lateinit var recycler: RecyclerView
+
+    private lateinit var historyRecycler: RecyclerView
+    private lateinit var searchResultsRecycler: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var historyBlock: LinearLayout
 
-    private lateinit var manageSearchHistoryUseCase: ManageSearchHistoryUseCase
-    private lateinit var searchTracksUseCase: SearchTracksUseCase
-    private lateinit var adapter: TracksAdapter
+    private lateinit var historyAdapter: TracksAdapter
+    private lateinit var searchResultsAdapter: TracksAdapter
 
-    private var searchQuery = ""
-    private var searchJob: Job? = null
-    private var lastClickTime = 0L
+    private val viewModel: SearchViewModel by viewModels {
+        SearchViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(_root_ide_package_.com.example.playlistmaker.R.layout.activity_search)
+        setContentView(R.layout.activity_search)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(_root_ide_package_.com.example.playlistmaker.R.id.searchRoot)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.searchRoot)) { view, insets ->
             view.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top)
             insets
         }
 
-        // Инициализация вьюшек
-        toolbar = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.toolbar)
-        searchEditText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.searchEditText)
-        clearButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.clearButton)
-        infoBlock = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.infoblock)
-        emptyIcon = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_icon)
-        emptyText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_text)
-        emptyButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.empty_button)
-        youSearchedText = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.youserchs)
-        clearHistoryButton = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.clear_histors)
-        recycler = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.recycler)
-        progressBar = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.progressBar)
-        historyBlock = findViewById(_root_ide_package_.com.example.playlistmaker.R.id.historyBlock)
+        initViews()
+        initRecycler()
+        initListeners()
+        observeViewModel()
 
-        manageSearchHistoryUseCase = _root_ide_package_.com.example.playlistmaker.Creator.provideManageSearchHistoryUseCase(this)
-        searchTracksUseCase = _root_ide_package_.com.example.playlistmaker.Creator.provideSearchTracksUseCase(this)
+        viewModel.onScreenOpened(isNetworkAvailable())
+    }
+
+    private fun initViews() {
+        toolbar = findViewById(R.id.toolbar)
+        searchEditText = findViewById(R.id.searchEditText)
+        clearButton = findViewById(R.id.clearButton)
+        infoBlock = findViewById(R.id.infoblock)
+        emptyIcon = findViewById(R.id.empty_icon)
+        emptyText = findViewById(R.id.empty_text)
+        emptyButton = findViewById(R.id.empty_button)
+        youSearchedText = findViewById(R.id.youserchs)
+        clearHistoryButton = findViewById(R.id.clear_histors)
+
+        historyBlock = findViewById(R.id.historyBlock)
+        historyRecycler = findViewById(R.id.recycler)
+        searchResultsRecycler = findViewById(R.id.searchResultsRecycler)
+
+        progressBar = findViewById(R.id.progressBar)
+    }
+
+    private fun initRecycler() {
+
+        historyAdapter = TracksAdapter(emptyList()) { track ->
+            viewModel.onTrackClicked(track)
+        }
+        historyRecycler.adapter = historyAdapter
 
 
-        adapter =
-            TracksAdapter(manageSearchHistoryUseCase.getHistory()) { track ->
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastClickTime < CLICK_DEBOUNCE_DELAY) return@TracksAdapter
-                lastClickTime = currentTime
+        searchResultsAdapter = TracksAdapter(emptyList()) { track ->
+            viewModel.onTrackClicked(track)
+        }
+        searchResultsRecycler.adapter = searchResultsAdapter
+    }
 
-                manageSearchHistoryUseCase.addTrack(track)
-                val intent = Intent(
-                    this@SearchActivity,
-                    AudioPlayerActivity::class.java
-                )
-                intent.putExtra("track", track)
-                startActivity(intent)
-            }
-        recycler.adapter = adapter
-
+    private fun initListeners() {
         toolbar.setNavigationOnClickListener { finish() }
-
 
         clearButton.setOnClickListener {
             searchEditText.text.clear()
             searchEditText.clearFocus()
             (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 .hideSoftInputFromWindow(searchEditText.windowToken, 0)
-            showHistory()
+            viewModel.onClearSearchClicked()
         }
-
 
         clearHistoryButton.setOnClickListener {
-            manageSearchHistoryUseCase.clearHistory()
-            showHistory()
+            viewModel.onClearHistoryClicked()
         }
 
+        emptyButton.setOnClickListener {
+
+            viewModel.onSearchButtonClicked()
+        }
 
         searchEditText.doOnTextChanged { text, _, _, _ ->
-            val query = text?.toString()?.trim().orEmpty()
+            val query = text?.toString().orEmpty()
             clearButton.isVisible = query.isNotEmpty()
-
-            searchJob?.cancel()
-
-            if (query.isEmpty()) {
-                showHistory()
-                return@doOnTextChanged
-            }
-
-            searchJob = lifecycleScope.launch {
-                delay(2000L)
-                performSearch(query)
-            }
+            viewModel.onSearchTextChanged(query)
         }
-
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val query = searchEditText.text.toString().trim()
-                if (query.isNotEmpty()) performSearch(query)
+                viewModel.onSearchButtonClicked()
                 true
-            } else false
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.state.observe(this) { state ->
+            renderState(state)
         }
 
+        viewModel.openTrackEvent.observe(this) { track ->
+            openPlayer(track)
+        }
+    }
 
-        if (!isNetworkAvailable()) {
-            showEmptyState(
-                true,
-                "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
-                showButton = true
-            )
+    private fun renderState(state: SearchScreenState) {
+        when (state) {
+            is SearchScreenState.Loading -> {
+                showLoading()
+            }
+            is SearchScreenState.History -> {
+                showHistory(state.tracks)
+            }
+            is SearchScreenState.Content -> {
+                showContent(state.tracks)
+            }
+            is SearchScreenState.Empty -> {
+                showEmpty(state.isInternetError)
+            }
+        }
+    }
+
+    private fun showLoading() {
+        progressBar.isVisible = true
+
+
+        historyBlock.isVisible = false
+        historyRecycler.isVisible = false
+        searchResultsRecycler.isVisible = false
+        infoBlock.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+    }
+
+    private fun showHistory(tracks: List<Track>) {
+        historyAdapter.updateDataset(tracks)
+
+        val hasHistory = tracks.isNotEmpty()
+        historyBlock.isVisible = hasHistory
+        historyRecycler.isVisible = hasHistory
+        youSearchedText.isVisible = hasHistory
+        clearHistoryButton.isVisible = hasHistory
+
+        searchResultsRecycler.isVisible = false
+        infoBlock.isVisible = false
+        progressBar.isVisible = false
+    }
+
+    private fun showContent(tracks: List<Track>) {
+        searchResultsAdapter.updateDataset(tracks)
+
+        searchResultsRecycler.isVisible = true
+
+        historyBlock.isVisible = false
+        historyRecycler.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+        infoBlock.isVisible = false
+        progressBar.isVisible = false
+    }
+
+    private fun showEmpty(isInternetError: Boolean) {
+
+        searchResultsAdapter.updateDataset(emptyList())
+
+        progressBar.isVisible = false
+        historyBlock.isVisible = false
+        historyRecycler.isVisible = false
+        searchResultsRecycler.isVisible = false
+        youSearchedText.isVisible = false
+        clearHistoryButton.isVisible = false
+
+        infoBlock.isVisible = true
+        emptyIcon.isVisible = true
+        emptyText.isVisible = true
+
+        if (isInternetError) {
+            emptyIcon.setImageResource(R.drawable.ic_not_int)
+            emptyText.text = "Проблемы со связью\n Загрузка не удалась. Проверьте подключение к интернету"
+            emptyButton.isVisible = true
         } else {
-            showEmptyState(false)
-            showHistory()
+            emptyIcon.setImageResource(R.drawable.ic_light_mode)
+            emptyText.text = "Ничего не нашлось"
+            emptyButton.isVisible = false
         }
     }
 
-    private fun showHistory() {
-        val history = manageSearchHistoryUseCase.getHistory()
-        adapter.updateDataset(history)
-
-
-        historyBlock.isVisible = history.isNotEmpty()
-        recycler.isVisible = history.isNotEmpty()
-        youSearchedText.isVisible = history.isNotEmpty()
-        clearHistoryButton.isVisible = history.isNotEmpty()
-        infoBlock.isVisible = false
-        progressBar.isVisible = false
-    }
-
-    private fun showEmptyState(show: Boolean, text: String = "", showButton: Boolean = false) {
-        infoBlock.isVisible = show
-        emptyIcon.isVisible = show
-        emptyText.isVisible = show
-        emptyButton.isVisible = showButton
-        historyBlock.isVisible = !show
-        recycler.isVisible = !show
-        progressBar.isVisible = false
-
-        if (show) {
-            emptyIcon.setImageResource(if (showButton) _root_ide_package_.com.example.playlistmaker.R.drawable.ic_not_int else _root_ide_package_.com.example.playlistmaker.R.drawable.ic_light_mode)
-            emptyText.text = text
-        }
-    }
-
-    private fun showLoading(show: Boolean) {
-        progressBar.isVisible = show
-        historyBlock.isVisible = !show
-        recycler.isVisible = !show
-        infoBlock.isVisible = false
+    private fun openPlayer(track: Track) {
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        intent.putExtra("track", track)
+        startActivity(intent)
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -198,43 +240,4 @@ class SearchActivity : androidx.appcompat.app.AppCompatActivity() {
         val networkInfo = cm.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }
-
-    private fun performSearch(query: String) {
-        searchQuery = query
-        showEmptyState(false)
-        showLoading(true)
-
-        lifecycleScope.launch {
-            try {
-
-                val tracks = searchTracksUseCase.execute(query)
-
-                if (tracks.isEmpty()) {
-
-                    adapter.updateDataset(emptyList())
-                    showEmptyState(true, "Ничего не нашлось")
-                } else {
-
-                    adapter.updateDataset(tracks)
-                    showEmptyState(false)
-                }
-
-                adapter.notifyDataSetChanged()
-
-            } catch (e: IOException) {
-
-                adapter.updateDataset(manageSearchHistoryUseCase.getHistory())
-                showEmptyState(
-                    true,
-                    "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету",
-                    showButton = true
-                )
-
-            } finally {
-
-                progressBar.isVisible = false
-            }
-        }
-    }
-
 }
