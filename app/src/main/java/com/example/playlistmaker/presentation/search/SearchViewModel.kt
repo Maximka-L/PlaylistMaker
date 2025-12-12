@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.usecase.IManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import kotlinx.coroutines.Job
@@ -17,7 +18,7 @@ private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
 class SearchViewModel(
     private val searchTracksUseCase: SearchTracksUseCase,
-    private val manageSearchHistoryUseCase: ManageSearchHistoryUseCase
+    private val manageSearchHistoryUseCase: IManageSearchHistoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableLiveData<SearchScreenState>()

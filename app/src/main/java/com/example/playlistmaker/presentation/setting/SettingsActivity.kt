@@ -13,18 +13,17 @@ import androidx.core.view.updatePadding
 import com.example.playlistmaker.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.example.playlistmaker.di.Creator
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
     private lateinit var darkSwitch: SwitchMaterial
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
-        viewModel = Creator.provideSettingsViewModel(this)
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
