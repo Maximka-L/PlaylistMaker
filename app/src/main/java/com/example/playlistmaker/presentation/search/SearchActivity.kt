@@ -12,7 +12,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
@@ -47,9 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var searchResultsAdapter: TracksAdapter
 
-    private val viewModel: SearchViewModel by viewModels {
-        SearchViewModelFactory(applicationContext)
-    }
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
