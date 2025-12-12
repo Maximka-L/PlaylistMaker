@@ -8,6 +8,7 @@ import com.example.playlistmaker.di.repositoryModule
 import com.example.playlistmaker.di.useCaseModule
 import com.example.playlistmaker.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
+import com.example.playlistmaker.di.playerModule
 import org.koin.core.context.startKoin
 
 class App : Application() {
@@ -21,7 +22,8 @@ class App : Application() {
                 dataModule,
                 repositoryModule,
                 useCaseModule,
-                viewModelModule
+                viewModelModule,
+                playerModule
             )
         }
 

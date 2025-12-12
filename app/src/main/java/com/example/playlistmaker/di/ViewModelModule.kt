@@ -1,5 +1,6 @@
 package com.example.playlistmaker.di
 
+import com.example.playlistmaker.presentation.player.PlayerViewModel
 import com.example.playlistmaker.presentation.search.SearchViewModel
 import com.example.playlistmaker.presentation.setting.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,4 +21,9 @@ val viewModelModule = module {
             manageSearchHistoryUseCase = get()
         )
     }
+
+    viewModel {
+        PlayerViewModel(audioPlayer = get())
+    }
+
 }
