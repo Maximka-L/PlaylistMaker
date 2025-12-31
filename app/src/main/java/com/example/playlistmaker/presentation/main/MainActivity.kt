@@ -5,7 +5,6 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -13,7 +12,6 @@ import com.example.playlistmaker.presentation.media.MediaActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.search.SearchActivity
 import com.example.playlistmaker.presentation.setting.SettingsActivity
-import com.example.playlistmaker.di.Creator
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -22,13 +20,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val getThemeUseCase = Creator.provideThemeSetter(this)
-        val isDark = getThemeUseCase()
-
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDark) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        )
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
