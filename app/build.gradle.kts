@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation("com.google.android.material:material:1.9.0")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
@@ -72,4 +73,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
 }

@@ -30,6 +30,9 @@
     <string name="year">Год</string>
     <string name="country">Страна</string>
     <string name="genre">Жанр</string>
+    <string name="track_list_play">Вы не создали\n ни одного плейлиста</string>
+    <string name="tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
 
     <string name="unknown_album">Неизвестный альбом</string>
     <string name="unknown_year">Неизвестно</string>
@@ -39,4 +42,7 @@
     <string name="play">Воспроизвести</string>
     <string name="favorite">В избранное</string>
     <string name="time_zero">00:00</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="string_emty">Ваша медиатека пуста</string>
 </resources>
