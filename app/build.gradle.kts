@@ -4,6 +4,7 @@ plugins {
     id("kotlin-parcelize")
     // если используешь Room:
     id("kotlin-kapt")
+    alias(libs.plugins.androidx.navigation.safeargs)
 }
 
 android {
@@ -48,6 +49,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation("com.google.android.material:material:1.9.0")
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
@@ -56,6 +58,8 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.3.0")
 
     implementation(libs.glide)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     annotationProcessor(libs.glide.compiler)
 
 
@@ -72,4 +76,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
 }
