@@ -7,17 +7,18 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".presentation.search.fragment.SearchFragment">
+    tools:context=".presentation.search.SearchActivity">
 
+    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/back"
         app:navigationIconTint="@color/icon_back"
         app:title="@string/search" />
 
 
-    <!-- Search field -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="36dp"
@@ -31,9 +32,8 @@
             android:id="@+id/searchEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:title="@string/search"
             android:background="@null"
-            android:drawableStart="@drawable/ic_search"
+            android:drawableStart="@drawable/ic_sssector"
             android:drawablePadding="8dp"
             android:drawableTint="@color/search"
             android:hint="@string/search"
@@ -50,21 +50,23 @@
             android:src="@drawable/ic_clear_24"
             android:visibility="gone"
             app:tint="@color/clear" />
+
     </FrameLayout>
 
-    <!-- Progress -->
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="45dp"
         android:layout_height="44dp"
-        android:layout_gravity="center"
         android:layout_marginTop="140dp"
+        android:layout_gravity="center"
         android:indeterminate="true"
         android:indeterminateTint="@color/primary"
         android:visibility="visible" />
 
-    <!-- History -->
+
+
     <LinearLayout
         android:id="@+id/historyBlock"
         android:layout_width="match_parent"
@@ -103,9 +105,10 @@
             android:text="@string/clear_history"
             android:textColor="@color/textColor"
             app:cornerRadius="@dimen/corner_radius_large" />
+
     </LinearLayout>
 
-    <!-- Empty / error -->
+
     <LinearLayout
         android:id="@+id/infoblock"
         android:layout_width="match_parent"
@@ -140,9 +143,10 @@
             android:text="Обновить"
             android:textColor="@color/textColor"
             app:cornerRadius="20dp" />
+
     </LinearLayout>
 
-    <!-- Search results -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecycler"
         android:layout_width="match_parent"
