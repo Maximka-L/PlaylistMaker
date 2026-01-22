@@ -95,6 +95,7 @@ class SearchFragment : Fragment() {
         searchResultsRecycler.adapter = searchResultsAdapter
     }
 
+
     private fun initListeners() {
         clearButton.setOnClickListener {
             searchEditText.text.clear()
