@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.player
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -11,13 +12,12 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.player.viewmodel.PlayerViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AudioPlayerActivity : AppCompatActivity() {
 
+
     private lateinit var binding: ActivityAudioPlayerBinding
-    private val viewModel: PlayerViewModel by viewModel()
+    private lateinit var viewModel: PlayerViewModel
     private var currentTrack: Track? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +34,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             insets
         }
 
+        viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
+
         currentTrack = intent.getParcelableExtra("track")
         if (currentTrack == null) {
             finish()
@@ -42,8 +44,9 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         showTrackInfo(currentTrack!!)
 
-        currentTrack?.previewUrl?.let {
-            viewModel.prepare(it)
+        val url = currentTrack?.previewUrl
+        if (url != null) {
+            viewModel.prepare(url)
         }
 
         setupObservers()

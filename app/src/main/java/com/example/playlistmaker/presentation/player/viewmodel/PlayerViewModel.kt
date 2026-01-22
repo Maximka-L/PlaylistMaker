@@ -13,6 +13,7 @@ class PlayerViewModel(
 
     private val handler = Handler(Looper.getMainLooper())
 
+
     private var isPrepared = false
     private var isPlaying = false
 

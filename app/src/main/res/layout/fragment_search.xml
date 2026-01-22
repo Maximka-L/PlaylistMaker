@@ -9,6 +9,7 @@
     android:orientation="vertical"
     tools:context=".presentation.search.fragment.SearchFragment">
 
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

@@ -10,6 +10,7 @@
     tools:context=".presentation.media.fragment.MediaFragment">
 
 
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

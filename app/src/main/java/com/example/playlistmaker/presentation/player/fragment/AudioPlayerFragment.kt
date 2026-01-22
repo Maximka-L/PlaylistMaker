@@ -12,6 +12,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.viewmodel.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
     private var _binding: FragmentAudioPlayerBinding? = null
