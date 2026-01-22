@@ -33,7 +33,7 @@
     <string name="track_list_play">Вы не создали\n ни одного плейлиста</string>
     <string name="tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
-
+    <string name="player">Плеер</string>
     <string name="unknown_album">Неизвестный альбом</string>
     <string name="unknown_year">Неизвестно</string>
     <string name="unknown_genre">Неизвестно</string>
