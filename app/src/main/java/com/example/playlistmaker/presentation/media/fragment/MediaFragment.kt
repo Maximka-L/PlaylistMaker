@@ -15,25 +15,19 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     private var _binding: FragmentMediaBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MediaViewModel by viewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentMediaBinding.bind(view)
-
         setupViewPager()
     }
 
     private fun setupViewPager() {
-        val adapter = PagerAdapter(this)
-        binding.pager.adapter = adapter
+        binding.pager.adapter = PagerAdapter(this)
 
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.tracks)
-                1 -> getString(R.string.playlists)
-                else -> ""
+                else -> getString(R.string.playlists)
             }
         }.attach()
     }

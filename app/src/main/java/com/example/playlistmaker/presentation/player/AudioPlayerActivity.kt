@@ -47,6 +47,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             viewModel.prepare(it)
         }
 
+
         setupObservers()
         setupListeners()
     }

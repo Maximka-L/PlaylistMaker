@@ -133,8 +133,10 @@ class SearchFragment : Fragment() {
             renderState(state)
         }
 
-        viewModel.openTrackEvent.observe(viewLifecycleOwner) { track ->
-            openPlayer(track)
+        viewModel.openTrackEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { track ->
+                openPlayer(track)
+            }
         }
     }
 

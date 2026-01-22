@@ -2,16 +2,19 @@ package com.example.playlistmaker.presentation.root
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.NavHostFragment
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityRootBinding
-
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 class RootActivity : AppCompatActivity() {
 
+
     private lateinit var binding: ActivityRootBinding
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,46 +25,20 @@ class RootActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
                 ?.findNavController() ?: return
 
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.searchFragment -> {
-                    navController.navigate(
-                        R.id.searchFragment,
-                        null,
-                        NavOptions.Builder()
-                            .setPopUpTo(navController.graph.startDestinationId, false)
-                            .setLaunchSingleTop(true)
-                            .build()
-                    )
-                    true
-                }
-
-                R.id.mediaFragment -> {
-                    navController.navigate(
-                        R.id.mediaFragment,
-                        null,
-                        NavOptions.Builder()
-                            .setPopUpTo(navController.graph.startDestinationId, false)
-                            .setLaunchSingleTop(true)
-                            .build()
-                    )
-                    true
-                }
-
-                R.id.settingsFragment -> {
-                    navController.navigate(
-                        R.id.settingsFragment,
-                        null,
-                        NavOptions.Builder()
-                            .setPopUpTo(navController.graph.startDestinationId, false)
-                            .setLaunchSingleTop(true)
-                            .build()
-                    )
-                    true
-                }
-
-                else -> false
-            }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.bottomNavigation.isVisible =
+                destination.id != R.id.audioPlayerFragment
         }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+
+            binding.bottomNavigation.isVisible =
+                !imeVisible && navController.currentDestination?.id != R.id.audioPlayerFragment
+
+            insets
+        }
+
+        binding.bottomNavigation.setupWithNavController(navController)
     }
 }

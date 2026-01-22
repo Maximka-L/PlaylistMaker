@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.usecase.IManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import com.example.playlistmaker.presentation.common.Event
 import com.example.playlistmaker.presentation.search.SearchScreenState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,7 +17,6 @@ import java.io.IOException
 private const val CLICK_DEBOUNCE_DELAY = 800L
 private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
-
 class SearchViewModel(
     private val searchTracksUseCase: SearchTracksUseCase,
     private val manageSearchHistoryUseCase: IManageSearchHistoryUseCase
@@ -25,8 +25,8 @@ class SearchViewModel(
     private val _state = MutableLiveData<SearchScreenState>()
     val state: LiveData<SearchScreenState> = _state
 
-    private val _openTrackEvent = MutableLiveData<Track>()
-    val openTrackEvent: LiveData<Track> = _openTrackEvent
+    private val _openTrackEvent = MutableLiveData<Event<Track>>()
+    val openTrackEvent: LiveData<Event<Track>> = _openTrackEvent
 
     private var searchJob: Job? = null
     private var lastClickTime = 0L
@@ -85,7 +85,7 @@ class SearchViewModel(
         lastClickTime = now
 
         manageSearchHistoryUseCase.addTrack(track)
-        _openTrackEvent.value = track
+        _openTrackEvent.value = Event(track)
     }
 
     private fun performSearch(query: String) {
