@@ -16,6 +16,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AudioPlayerActivity : AppCompatActivity() {
 
+
     private lateinit var binding: ActivityAudioPlayerBinding
     private val viewModel: PlayerViewModel by viewModel()
     private var currentTrack: Track? = null

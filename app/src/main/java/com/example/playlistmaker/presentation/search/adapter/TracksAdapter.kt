@@ -12,6 +12,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 
+
 class TracksAdapter(
     private var dataset: List<Track>,
     private val onItemClick: (Track) -> Unit

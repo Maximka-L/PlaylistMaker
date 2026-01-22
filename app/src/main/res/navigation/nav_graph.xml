@@ -15,6 +15,7 @@
             app:destination="@id/audioPlayerFragment" />
     </fragment>
 
+
     <!-- Media -->
     <fragment
         android:id="@+id/mediaFragment"
