@@ -16,6 +16,7 @@ import java.io.IOException
 private const val CLICK_DEBOUNCE_DELAY = 800L
 private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
+
 class SearchViewModel(
     private val searchTracksUseCase: SearchTracksUseCase,
     private val manageSearchHistoryUseCase: IManageSearchHistoryUseCase

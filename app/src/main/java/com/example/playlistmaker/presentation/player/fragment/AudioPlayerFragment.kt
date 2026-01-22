@@ -1,52 +1,43 @@
-package com.example.playlistmaker.presentation.player
+package com.example.playlistmaker.presentation.player.fragment
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.player.viewmodel.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AudioPlayerActivity : AppCompatActivity() {
 
+class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
-    private lateinit var binding: ActivityAudioPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private var _binding: FragmentAudioPlayerBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: PlayerViewModel by viewModel()
     private var currentTrack: Track? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        enableEdgeToEdge()
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        _binding = FragmentAudioPlayerBinding.bind(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            v.updatePadding(
-                top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            )
-            insets
-        }
+        // Получаем аргумент из Navigation
+        currentTrack = arguments?.getParcelable("track")
 
-        viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
-
-        currentTrack = intent.getParcelableExtra("track")
         if (currentTrack == null) {
-            finish()
+            findNavController().popBackStack()
             return
         }
 
         showTrackInfo(currentTrack!!)
 
-        val url = currentTrack?.previewUrl
-        if (url != null) {
-            viewModel.prepare(url)
+        currentTrack?.previewUrl?.let {
+            viewModel.prepare(it)
         }
 
         setupObservers()
@@ -54,11 +45,11 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.time.observe(this) {
+        viewModel.time.observe(viewLifecycleOwner) {
             binding.currentTimeTextView.text = it
         }
 
-        viewModel.isPlayingLive.observe(this) { playing ->
+        viewModel.isPlayingLive.observe(viewLifecycleOwner) { playing ->
             binding.playButton.setImageResource(
                 if (playing) R.drawable.ic_pause else R.drawable.ic_play
             )
@@ -70,8 +61,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             viewModel.toggle()
         }
 
-        binding.toolbar.setOnClickListener {
-            finish()
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
@@ -85,7 +76,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             genreTextView.text = track.primaryGenreName ?: getString(R.string.unknown_genre)
             countryTextView.text = track.country ?: getString(R.string.unknown_country)
 
-            Glide.with(this@AudioPlayerActivity)
+            Glide.with(this@AudioPlayerFragment)
                 .load(track.getCoverArtwork())
                 .placeholder(R.drawable.ic_placeholder1)
                 .error(R.drawable.ic_placeholder1)
@@ -94,5 +85,10 @@ class AudioPlayerActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(coverImageView)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -99,6 +99,7 @@ class SearchActivity : AppCompatActivity() {
         searchResultsRecycler.adapter = searchResultsAdapter
     }
 
+
     private fun initListeners() {
         toolbar.setNavigationOnClickListener { finish() }
 
