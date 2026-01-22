@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.search.viewmodel
+package com.example.playlistmaker.presentation.search
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.usecase.IManageSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
-import com.example.playlistmaker.presentation.search.SearchScreenState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
