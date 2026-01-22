@@ -1,12 +1,13 @@
-package com.example.playlistmaker.presentation.search
+package com.example.playlistmaker.presentation.search.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecase.IManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import com.example.playlistmaker.presentation.search.SearchScreenState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,9 +16,10 @@ import java.io.IOException
 private const val CLICK_DEBOUNCE_DELAY = 800L
 private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
+
 class SearchViewModel(
     private val searchTracksUseCase: SearchTracksUseCase,
-    private val manageSearchHistoryUseCase: ManageSearchHistoryUseCase
+    private val manageSearchHistoryUseCase: IManageSearchHistoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableLiveData<SearchScreenState>()

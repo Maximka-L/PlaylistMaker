@@ -1,16 +1,18 @@
-package com.example.playlistmaker.presentation.player
+package com.example.playlistmaker.presentation.player.viewmodel
 
-import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.domain.player.AudioPlayer
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val audioPlayer: AudioPlayer
+) : ViewModel() {
 
-    private var mediaPlayer: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
+
 
     private var isPrepared = false
     private var isPlaying = false
@@ -22,34 +24,32 @@ class PlayerViewModel : ViewModel() {
     val isPlayingLive: LiveData<Boolean> = _isPlayingLive
 
     fun prepare(url: String) {
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(url)
-            prepareAsync()
-            setOnPreparedListener {
+        audioPlayer.prepare(
+            url = url,
+            onPrepared = {
                 isPrepared = true
-                _isPlayingLive.value = false
-            }
-            setOnCompletionListener {
+                _isPlayingLive.postValue(false)
+            },
+            onCompletion = {
                 reset()
             }
-        }
+        )
     }
 
     fun toggle() {
         if (!isPrepared) return
-
         if (isPlaying) pause() else play()
     }
 
     private fun play() {
-        mediaPlayer?.start()
+        audioPlayer.play()
         isPlaying = true
         _isPlayingLive.value = true
         startTimer()
     }
 
     private fun pause() {
-        mediaPlayer?.pause()
+        audioPlayer.pause()
         isPlaying = false
         _isPlayingLive.value = false
         stopTimer()
@@ -62,19 +62,14 @@ class PlayerViewModel : ViewModel() {
 
     private val updateTime = object : Runnable {
         override fun run() {
-            val ms = mediaPlayer?.currentPosition ?: 0
+            val ms = audioPlayer.currentPositionMs()
             _time.value = formatTime(ms)
             handler.postDelayed(this, 500)
         }
     }
 
-    private fun startTimer() {
-        handler.post(updateTime)
-    }
-
-    private fun stopTimer() {
-        handler.removeCallbacks(updateTime)
-    }
+    private fun startTimer() = handler.post(updateTime)
+    private fun stopTimer() = handler.removeCallbacks(updateTime)
 
     private fun formatTime(ms: Int): String {
         val sec = ms / 1000
@@ -82,9 +77,8 @@ class PlayerViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        super.onCleared()
         stopTimer()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        audioPlayer.release()
+        super.onCleared()
     }
 }

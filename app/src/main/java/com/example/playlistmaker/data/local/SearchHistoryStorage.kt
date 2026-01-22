@@ -5,9 +5,11 @@ import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistoryStorage(private val sharedPrefs: SharedPreferences) {
+class SearchHistoryStorage(
+    private val sharedPrefs: SharedPreferences,
+    private val gson: Gson,
+) {
 
-    private val gson = Gson()
     private val key = "search_history2"
 
     fun getHistory(): ArrayList<Track> {
