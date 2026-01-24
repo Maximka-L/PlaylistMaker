@@ -26,7 +26,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
         _binding = FragmentAudioPlayerBinding.bind(view)
 
-        // Получаем аргумент из Navigation
+
         currentTrack = arguments?.getParcelable("track")
 
         if (currentTrack == null) {
