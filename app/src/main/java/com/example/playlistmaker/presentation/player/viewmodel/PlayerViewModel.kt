@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.player
+package com.example.playlistmaker.presentation.player.viewmodel
 
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +12,7 @@ class PlayerViewModel(
 ) : ViewModel() {
 
     private val handler = Handler(Looper.getMainLooper())
+
 
     private var isPrepared = false
     private var isPlaying = false

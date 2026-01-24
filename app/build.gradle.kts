@@ -4,6 +4,7 @@ plugins {
     id("kotlin-parcelize")
     // если используешь Room:
     id("kotlin-kapt")
+    alias(libs.plugins.androidx.navigation.safeargs)
 }
 
 android {
@@ -57,6 +58,8 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.3.0")
 
     implementation(libs.glide)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     annotationProcessor(libs.glide.compiler)
 
 
@@ -64,6 +67,7 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+
 
 
     implementation(libs.kotlinx.coroutines.core)
