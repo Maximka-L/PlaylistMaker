@@ -26,20 +26,5 @@ class RootActivity : AppCompatActivity() {
             binding.bottomNavigation.isVisible =
                 destination.id != R.id.audioPlayerFragment
         }
-
-
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
-            val rect = android.graphics.Rect()
-            binding.root.getWindowVisibleDisplayFrame(rect)
-
-            val screenHeight = binding.root.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-
-            val isKeyboardVisible = keypadHeight > screenHeight * 0.15
-
-            binding.bottomNavigation.isVisible =
-                !isKeyboardVisible &&
-                        navController.currentDestination?.id != R.id.audioPlayerFragment
-        }
     }
 }
