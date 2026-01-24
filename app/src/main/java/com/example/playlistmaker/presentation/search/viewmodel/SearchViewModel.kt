@@ -35,7 +35,10 @@ class SearchViewModel(
     fun onScreenOpened(isNetworkAvailable: Boolean) {
         if (!isNetworkAvailable) {
             _state.value = SearchScreenState.Empty(isInternetError = true)
-        } else {
+            return
+        }
+
+        if (currentQuery.isEmpty()) {
             showHistory()
         }
     }
