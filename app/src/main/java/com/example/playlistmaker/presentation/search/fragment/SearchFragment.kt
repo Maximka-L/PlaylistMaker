@@ -63,7 +63,6 @@ class SearchFragment : Fragment() {
         initListeners()
         observeViewModel()
 
-        viewModel.onScreenOpened(isNetworkAvailable())
     }
 
     private fun initViews(view: View) {
@@ -101,7 +100,7 @@ class SearchFragment : Fragment() {
             searchEditText.text.clear()
             searchEditText.clearFocus()
             hideKeyboard()
-            viewModel.onClearSearchClicked()
+
         }
 
         clearHistoryButton.setOnClickListener {

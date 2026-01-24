@@ -10,6 +10,7 @@ import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import com.example.playlistmaker.presentation.common.Event
 import com.example.playlistmaker.presentation.search.SearchScreenState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -29,72 +30,84 @@ class SearchViewModel(
 
     private var searchJob: Job? = null
     private var lastClickTime = 0L
-    private var currentQuery: String = ""
 
-    fun onScreenOpened(isNetworkAvailable: Boolean) {
-        if (!isNetworkAvailable) {
-            _state.value = SearchScreenState.Empty(isInternetError = true)
-        } else {
-            showHistory()
+    private var currentQuery: String = ""
+    private var lastTracks: List<Track>? = null
+
+    init {
+        restoreState()
+    }
+
+    private fun restoreState() {
+        when {
+            lastTracks != null -> {
+                _state.value = SearchScreenState.Content(lastTracks!!)
+            }
+            else -> {
+                _state.value = SearchScreenState.History(
+                    manageSearchHistoryUseCase.getHistory()
+                )
+            }
         }
     }
 
-    private fun showHistory() {
-        _state.value = SearchScreenState.History(
-            manageSearchHistoryUseCase.getHistory()
-        )
-    }
-
     fun onSearchTextChanged(text: String) {
-        currentQuery = text.trim()
+        val newQuery = text.trim()
+
+        if (newQuery == currentQuery) return
+        currentQuery = newQuery
+
+        searchJob?.cancel()
 
         if (currentQuery.isEmpty()) {
-            cancelSearch()
-            showHistory()
+            lastTracks = null
+            _state.value = SearchScreenState.History(
+                manageSearchHistoryUseCase.getHistory()
+            )
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            performSearch()
         }
     }
 
     fun onSearchButtonClicked() {
         if (currentQuery.isEmpty()) return
+        searchJob?.cancel()
+        performSearch()
+    }
 
-        cancelSearch()
-        searchJob = viewModelScope.launch {
+    private fun performSearch() {
+        viewModelScope.launch {
             _state.value = SearchScreenState.Loading
             try {
                 val tracks = searchTracksUseCase.execute(currentQuery)
-                _state.value =
-                    if (tracks.isEmpty())
-                        SearchScreenState.Empty(false)
-                    else
-                        SearchScreenState.Content(tracks)
+                lastTracks = tracks
+
+                _state.value = if (tracks.isEmpty()) {
+                    SearchScreenState.Empty(isInternetError = false)
+                } else {
+                    SearchScreenState.Content(tracks)
+                }
             } catch (e: IOException) {
-                _state.value = SearchScreenState.Empty(true)
+                _state.value = SearchScreenState.Empty(isInternetError = true)
             }
         }
     }
 
-    fun cancelSearch() {
-        searchJob?.cancel()
-        searchJob = null
-    }
-
-    fun onClearSearchClicked() {
-        currentQuery = ""
-        cancelSearch()
-        showHistory()
-    }
-
-    fun onClearHistoryClicked() {
-        manageSearchHistoryUseCase.clearHistory()
-        showHistory()
-    }
-
     fun onTrackClicked(track: Track) {
         val now = System.currentTimeMillis()
-        if (now - lastClickTime < 800L) return
+        if (now - lastClickTime < CLICK_DEBOUNCE_DELAY) return
         lastClickTime = now
 
         manageSearchHistoryUseCase.addTrack(track)
         _openTrackEvent.value = Event(track)
+    }
+
+    fun onClearHistoryClicked() {
+        manageSearchHistoryUseCase.clearHistory()
+        _state.value = SearchScreenState.History(emptyList())
     }
 }
