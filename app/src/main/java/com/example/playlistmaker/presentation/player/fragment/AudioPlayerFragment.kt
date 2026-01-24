@@ -61,9 +61,6 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
             viewModel.toggle()
         }
 
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
     }
 
     private fun showTrackInfo(track: Track) {

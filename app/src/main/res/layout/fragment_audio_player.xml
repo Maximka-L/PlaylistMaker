@@ -9,13 +9,6 @@
     android:background="@color/background"
     tools:context=".presentation.player.fragment.AudioPlayerFragment">
 
-    <!-- Toolbar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:navigationIcon="@drawable/back"
-        android:title="@string/player" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
