@@ -7,14 +7,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityRootBinding
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 class RootActivity : AppCompatActivity() {
 
-
     private lateinit var binding: ActivityRootBinding
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,20 +20,26 @@ class RootActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
                 ?.findNavController() ?: return
 
+        binding.bottomNavigation.setupWithNavController(navController)
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavigation.isVisible =
                 destination.id != R.id.audioPlayerFragment
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            val rect = android.graphics.Rect()
+            binding.root.getWindowVisibleDisplayFrame(rect)
+
+            val screenHeight = binding.root.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+
+            val isKeyboardVisible = keypadHeight > screenHeight * 0.15
 
             binding.bottomNavigation.isVisible =
-                !imeVisible && navController.currentDestination?.id != R.id.audioPlayerFragment
-
-            insets
+                !isKeyboardVisible &&
+                        navController.currentDestination?.id != R.id.audioPlayerFragment
         }
-
-        binding.bottomNavigation.setupWithNavController(navController)
     }
 }
