@@ -12,12 +12,17 @@ import kotlinx.coroutines.launch
 
 private const val PROGRESS_UPDATE_DELAY = 300L
 
+
+private data class PlayerState(
+    val isPrepared: Boolean = false,
+    val isPlaying: Boolean = false
+)
+
 class PlayerViewModel(
     private val audioPlayer: AudioPlayer
 ) : ViewModel() {
 
-    private var isPrepared = false
-    private var isPlaying = false
+    private var playerState = PlayerState()
 
     private var progressJob: Job? = null
 
@@ -31,14 +36,13 @@ class PlayerViewModel(
         audioPlayer.prepare(
             url = url,
             onPrepared = {
-                isPrepared = true
+                playerState = playerState.copy(isPrepared = true, isPlaying = false)
                 _isPlayingLive.postValue(false)
                 _time.postValue("00:00")
             },
             onCompletion = {
-
                 stopProgressUpdates()
-                isPlaying = false
+                playerState = playerState.copy(isPlaying = false)
                 _isPlayingLive.postValue(false)
                 _time.postValue("00:00")
             }
@@ -46,20 +50,20 @@ class PlayerViewModel(
     }
 
     fun toggle() {
-        if (!isPrepared) return
-        if (isPlaying) pause() else play()
+        if (!playerState.isPrepared) return
+        if (playerState.isPlaying) pause() else play()
     }
 
     private fun play() {
         audioPlayer.play()
-        isPlaying = true
+        playerState = playerState.copy(isPlaying = true)
         _isPlayingLive.value = true
         startProgressUpdates()
     }
 
     private fun pause() {
         audioPlayer.pause()
-        isPlaying = false
+        playerState = playerState.copy(isPlaying = false)
         _isPlayingLive.value = false
         stopProgressUpdates()
     }
@@ -68,7 +72,7 @@ class PlayerViewModel(
         if (progressJob?.isActive == true) return
 
         progressJob = viewModelScope.launch {
-            while (isActive && isPlaying) {
+            while (isActive && playerState.isPlaying) {
                 val ms = audioPlayer.currentPositionMs()
                 _time.value = formatTime(ms)
                 delay(PROGRESS_UPDATE_DELAY)
