@@ -12,7 +12,6 @@ import com.example.playlistmaker.presentation.search.SearchScreenState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 private const val CLICK_DEBOUNCE_DELAY = 800L
 private const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -28,8 +27,9 @@ class SearchViewModel(
     private val _openTrackEvent = MutableLiveData<Event<Track>>()
     val openTrackEvent: LiveData<Event<Track>> = _openTrackEvent
 
-    private var searchJob: Job? = null
-    private var lastClickTime = 0L
+    private var searchDebounceJob: Job? = null
+    private var searchCollectJob: Job? = null
+    private var clickDebounceJob: Job? = null
 
     private var currentQuery: String = ""
     private var lastTracks: List<Track>? = null
@@ -39,71 +39,68 @@ class SearchViewModel(
     }
 
     private fun restoreState() {
-        when {
-            lastTracks != null -> {
-                _state.value = SearchScreenState.Content(lastTracks!!)
-            }
-            else -> {
-                _state.value = SearchScreenState.History(
-                    manageSearchHistoryUseCase.getHistory()
-                )
-            }
+        _state.value = when {
+            lastTracks != null -> SearchScreenState.Content(lastTracks!!)
+            else -> SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
         }
     }
 
     fun onSearchTextChanged(text: String) {
         val newQuery = text.trim()
-
         if (newQuery == currentQuery) return
         currentQuery = newQuery
 
-        searchJob?.cancel()
+        searchDebounceJob?.cancel()
 
         if (currentQuery.isEmpty()) {
             lastTracks = null
-            _state.value = SearchScreenState.History(
-                manageSearchHistoryUseCase.getHistory()
-            )
+            searchCollectJob?.cancel()
+            _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
             return
         }
 
-        searchJob = viewModelScope.launch {
+        searchDebounceJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
-            performSearch()
+            performSearch(currentQuery)
         }
     }
 
     fun onSearchButtonClicked() {
         if (currentQuery.isEmpty()) return
-        searchJob?.cancel()
-        performSearch()
+        searchDebounceJob?.cancel()
+        performSearch(currentQuery)
     }
 
-    private fun performSearch() {
-        viewModelScope.launch {
-            _state.value = SearchScreenState.Loading
-            try {
-                val tracks = searchTracksUseCase.execute(currentQuery)
-                lastTracks = tracks
+    private fun performSearch(query: String) {
 
-                _state.value = if (tracks.isEmpty()) {
-                    SearchScreenState.Empty(isInternetError = false)
-                } else {
-                    SearchScreenState.Content(tracks)
+        searchCollectJob?.cancel()
+
+        searchCollectJob = viewModelScope.launch {
+            searchTracksUseCase.execute(query)
+                .collect { newState ->
+                    _state.value = newState
+
+
+                    if (newState is SearchScreenState.Content) {
+                        lastTracks = newState.tracks
+                    }
+
+                    if (newState is SearchScreenState.Empty) {
+                        lastTracks = emptyList()
+                    }
                 }
-            } catch (e: IOException) {
-                _state.value = SearchScreenState.Empty(isInternetError = true)
-            }
         }
     }
 
     fun onTrackClicked(track: Track) {
-        val now = System.currentTimeMillis()
-        if (now - lastClickTime < CLICK_DEBOUNCE_DELAY) return
-        lastClickTime = now
 
-        manageSearchHistoryUseCase.addTrack(track)
-        _openTrackEvent.value = Event(track)
+        if (clickDebounceJob?.isActive == true) return
+
+        clickDebounceJob = viewModelScope.launch {
+            manageSearchHistoryUseCase.addTrack(track)
+            _openTrackEvent.value = Event(track)
+            delay(CLICK_DEBOUNCE_DELAY)
+        }
     }
 
     fun onClearHistoryClicked() {

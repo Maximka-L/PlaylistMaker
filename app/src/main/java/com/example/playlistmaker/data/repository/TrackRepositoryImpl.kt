@@ -5,7 +5,9 @@ import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.TrackRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -14,15 +16,18 @@ class TrackRepositoryImpl(
     private val localStorage: com.example.playlistmaker.data.local.SearchHistoryStorage
 ) : TrackRepository {
 
-    override suspend fun searchTracks(query: String): List<Track> = withContext(Dispatchers.IO) {
+    override fun searchTracks(query: String): Flow<TrackRepository.SearchResult> = flow {
+        emit(TrackRepository.SearchResult.Loading)
 
-        if (!networkClient.isConnected()){
-            return@withContext emptyList()
+        if (!networkClient.isConnected()) {
+            emit(TrackRepository.SearchResult.Error(isInternetError = true))
+            return@flow
         }
 
         try {
-            val response: SearchResponse = networkClient.api.searchSongs(query)
-            response.results.map { dto ->
+            val response: SearchResponse = networkClient.searchSongs(query)
+
+            val tracks = response.results.map { dto ->
                 Track(
                     trackId = dto.trackId,
                     trackName = dto.trackName,
@@ -36,14 +41,14 @@ class TrackRepositoryImpl(
                     previewUrl = dto.previewUrl
                 )
             }
+
+            emit(TrackRepository.SearchResult.Success(tracks))
         } catch (e: IOException) {
-            e.printStackTrace()
-            emptyList()
+            emit(TrackRepository.SearchResult.Error(isInternetError = true))
         } catch (e: HttpException) {
-            e.printStackTrace()
-            emptyList()
+            emit(TrackRepository.SearchResult.Error(isInternetError = false))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override fun getHistory(): List<Track> = localStorage.getHistory()
 
