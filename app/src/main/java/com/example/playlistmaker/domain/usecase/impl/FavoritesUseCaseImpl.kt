@@ -20,6 +20,6 @@ class FavoritesUseCaseImpl(
 
     override fun getFavoriteTracks(): Flow<List<Track>> {
         return repository.getFavoriteTracks()
-            .map { list -> list.reversed() }
+            .map { tracks -> tracks.reversed() }
     }
 }
