@@ -65,6 +65,11 @@ class SearchFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
     private fun initViews(view: View) {
         searchEditText = view.findViewById(R.id.searchEditText)
         clearButton = view.findViewById(R.id.clearButton)

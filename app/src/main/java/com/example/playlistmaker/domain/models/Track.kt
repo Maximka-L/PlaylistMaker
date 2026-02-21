@@ -14,7 +14,8 @@ data class Track(
     val releaseDate: String? = "",
     val primaryGenreName: String? = "",
     val previewUrl: String?,
-    val country: String? = ""
+    val country: String? = "",
+    var isFavorite: Boolean = false
 
 ) : Parcelable {
 

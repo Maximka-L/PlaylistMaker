@@ -39,9 +39,14 @@ class SearchViewModel(
     }
 
     private fun restoreState() {
-        _state.value = when {
-            lastTracks != null -> SearchScreenState.Content(lastTracks!!)
-            else -> SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+        if (lastTracks != null) {
+            _state.value = SearchScreenState.Content(lastTracks!!)
+            return
+        }
+
+        viewModelScope.launch {
+            val history = manageSearchHistoryUseCase.getHistory()
+            _state.value = SearchScreenState.History(history)
         }
     }
 
@@ -55,7 +60,10 @@ class SearchViewModel(
         if (currentQuery.isEmpty()) {
             lastTracks = null
             searchCollectJob?.cancel()
-            _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+
+            viewModelScope.launch {
+                _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+            }
             return
         }
 
@@ -72,34 +80,37 @@ class SearchViewModel(
     }
 
     private fun performSearch(query: String) {
-
         searchCollectJob?.cancel()
 
         searchCollectJob = viewModelScope.launch {
-            searchTracksUseCase.execute(query)
-                .collect { newState ->
-                    _state.value = newState
+            searchTracksUseCase.execute(query).collect { newState ->
+                _state.value = newState
 
-
-                    if (newState is SearchScreenState.Content) {
-                        lastTracks = newState.tracks
-                    }
-
-                    if (newState is SearchScreenState.Empty) {
-                        lastTracks = emptyList()
-                    }
+                when (newState) {
+                    is SearchScreenState.Content -> lastTracks = newState.tracks
+                    is SearchScreenState.Empty -> lastTracks = emptyList()
+                    else -> Unit
                 }
+            }
         }
     }
 
     fun onTrackClicked(track: Track) {
-
         if (clickDebounceJob?.isActive == true) return
 
         clickDebounceJob = viewModelScope.launch {
             manageSearchHistoryUseCase.addTrack(track)
             _openTrackEvent.value = Event(track)
             delay(CLICK_DEBOUNCE_DELAY)
+        }
+    }
+    fun onResume() {
+        if (currentQuery.isBlank()) {
+            viewModelScope.launch {
+                _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+            }
+        } else {
+            performSearch(currentQuery)
         }
     }
 

@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayer
+import com.example.playlistmaker.domain.usecase.FavoritesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -19,7 +21,8 @@ private data class PlayerState(
 )
 
 class PlayerViewModel(
-    private val audioPlayer: AudioPlayer
+    private val audioPlayer: AudioPlayer,
+    private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
     private var playerState = PlayerState()
@@ -31,6 +34,10 @@ class PlayerViewModel(
 
     private val _isPlayingLive = MutableLiveData(false)
     val isPlayingLive: LiveData<Boolean> = _isPlayingLive
+
+    private var currentTrack: Track? = null
+    private val _isFavorite = MutableLiveData(false)
+    val isFavorite: LiveData<Boolean> = _isFavorite
 
     fun prepare(url: String) {
         audioPlayer.prepare(
@@ -68,6 +75,11 @@ class PlayerViewModel(
         stopProgressUpdates()
     }
 
+    fun setTrack(track: Track){
+        currentTrack = track
+        _isFavorite.value = track.isFavorite
+    }
+
     private fun startProgressUpdates() {
         if (progressJob?.isActive == true) return
 
@@ -77,6 +89,21 @@ class PlayerViewModel(
                 _time.value = formatTime(ms)
                 delay(PROGRESS_UPDATE_DELAY)
             }
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+
+        viewModelScope.launch {
+            if (track.isFavorite) {
+                favoritesUseCase.removeTrack(track)
+            } else {
+                favoritesUseCase.addTrack(track)
+            }
+
+            track.isFavorite = !track.isFavorite
+            _isFavorite.postValue(track.isFavorite)
         }
     }
 
