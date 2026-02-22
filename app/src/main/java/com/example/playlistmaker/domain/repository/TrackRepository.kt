@@ -7,7 +7,7 @@ interface TrackRepository {
 
     fun searchTracks(query: String): Flow<SearchResult>
 
-    fun getHistory(): List<Track>
+    suspend fun getHistory(): List<Track>
     fun addTrack(track: Track)
     fun clearHistory()
 

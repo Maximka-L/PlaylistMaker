@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayer
+import com.example.playlistmaker.domain.usecase.FavoritesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -12,14 +14,14 @@ import kotlinx.coroutines.launch
 
 private const val PROGRESS_UPDATE_DELAY = 300L
 
-
 private data class PlayerState(
     val isPrepared: Boolean = false,
     val isPlaying: Boolean = false
 )
 
 class PlayerViewModel(
-    private val audioPlayer: AudioPlayer
+    private val audioPlayer: AudioPlayer,
+    private val favoritesUseCase: FavoritesUseCase
 ) : ViewModel() {
 
     private var playerState = PlayerState()
@@ -31,6 +33,11 @@ class PlayerViewModel(
 
     private val _isPlayingLive = MutableLiveData(false)
     val isPlayingLive: LiveData<Boolean> = _isPlayingLive
+
+    private var currentTrack: Track? = null
+
+    private val _isFavorite = MutableLiveData(false)
+    val isFavorite: LiveData<Boolean> = _isFavorite
 
     fun prepare(url: String) {
         audioPlayer.prepare(
@@ -66,6 +73,29 @@ class PlayerViewModel(
         playerState = playerState.copy(isPlaying = false)
         _isPlayingLive.value = false
         stopProgressUpdates()
+    }
+
+    fun setTrack(track: Track) {
+        currentTrack = track
+
+
+        viewModelScope.launch {
+            _isFavorite.postValue(favoritesUseCase.isFavorite(track.trackId))
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+
+        viewModelScope.launch {
+            runCatching {
+                favoritesUseCase.toggleFavorite(track)
+            }.onSuccess { newValue ->
+                _isFavorite.postValue(newValue)
+            }.onFailure {
+
+            }
+        }
     }
 
     private fun startProgressUpdates() {

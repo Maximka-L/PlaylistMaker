@@ -35,6 +35,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         }
 
         showTrackInfo(currentTrack!!)
+        viewModel.setTrack(currentTrack!!)
 
         currentTrack?.previewUrl?.let {
             viewModel.prepare(it)
@@ -54,6 +55,12 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
                 if (playing) R.drawable.ic_pause else R.drawable.ic_play
             )
         }
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFav ->
+            binding.favoriteButton.setImageResource(
+                if (isFav) R.drawable.ic_like_filled else R.drawable.ic_favorite
+            )
+        }
+
     }
 
     private fun setupListeners() {
@@ -61,9 +68,14 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
             viewModel.toggle()
         }
 
-        binding.toolbar.setOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.favoriteButton.setOnClickListener {
+            viewModel.onFavoriteClicked()
+        }
+
     }
 
     private fun showTrackInfo(track: Track) {

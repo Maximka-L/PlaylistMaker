@@ -1,6 +1,7 @@
 package com.example.playlistmaker.data.repository
 
 import com.example.playlistmaker.data.dto.SearchResponse
+import com.example.playlistmaker.data.local.SearchHistoryStorage
 import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.TrackRepository
@@ -13,7 +14,7 @@ import java.io.IOException
 
 class TrackRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val localStorage: com.example.playlistmaker.data.local.SearchHistoryStorage
+    private val localStorage: SearchHistoryStorage
 ) : TrackRepository {
 
     override fun searchTracks(query: String): Flow<TrackRepository.SearchResult> = flow {
@@ -43,14 +44,16 @@ class TrackRepositoryImpl(
             }
 
             emit(TrackRepository.SearchResult.Success(tracks))
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             emit(TrackRepository.SearchResult.Error(isInternetError = true))
-        } catch (e: HttpException) {
+        } catch (_: HttpException) {
             emit(TrackRepository.SearchResult.Error(isInternetError = false))
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getHistory(): List<Track> = localStorage.getHistory()
+    override suspend fun getHistory(): List<Track> {
+        return localStorage.getHistory()
+    }
 
     override fun addTrack(track: Track) = localStorage.addTrack(track)
 

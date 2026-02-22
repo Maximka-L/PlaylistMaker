@@ -1,6 +1,8 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import androidx.room.Room
+import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.local.SearchHistoryStorage
 import com.example.playlistmaker.data.network.ItunesApi
 import com.example.playlistmaker.data.network.NetworkClient
@@ -54,4 +56,9 @@ val dataModule = module {
     single {
         NetworkClient(api = get(), context = androidContext())
     }
+
+    single { Room.databaseBuilder(androidContext(), AppDatabase::class.java,"playlist_maker.db").build()
+    }
+    single { get<AppDatabase>().favoriteTrackDao() }
+
 }

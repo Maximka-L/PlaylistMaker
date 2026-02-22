@@ -40,5 +40,5 @@
     <color name="yn_color">#FFFFFF</color>
     <color name="albumTextView">#AEAFB4</color>
     <color name="color_icon_status">#FFFFFF</color>
-
+    <color name="ic_like">#FFFFFF</color>
 </resources>
