@@ -1,6 +1,5 @@
 package com.example.playlistmaker.data.repository
 
-import com.example.playlistmaker.data.db.FavoriteTrackDao
 import com.example.playlistmaker.data.dto.SearchResponse
 import com.example.playlistmaker.data.local.SearchHistoryStorage
 import com.example.playlistmaker.data.network.NetworkClient
@@ -15,8 +14,7 @@ import java.io.IOException
 
 class TrackRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val localStorage: SearchHistoryStorage,
-    private val favoriteTrackDao: FavoriteTrackDao
+    private val localStorage: SearchHistoryStorage
 ) : TrackRepository {
 
     override fun searchTracks(query: String): Flow<TrackRepository.SearchResult> = flow {
@@ -45,29 +43,16 @@ class TrackRepositoryImpl(
                 )
             }
 
-            val favoriteIds = favoriteTrackDao.getFavoriteTrackIdsOnce().toSet()
-            tracks.forEach { track ->
-                track.isFavorite = track.trackId in favoriteIds
-            }
-
             emit(TrackRepository.SearchResult.Success(tracks))
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             emit(TrackRepository.SearchResult.Error(isInternetError = true))
-        } catch (e: HttpException) {
+        } catch (_: HttpException) {
             emit(TrackRepository.SearchResult.Error(isInternetError = false))
         }
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getHistory(): List<Track> {
-        val history = localStorage.getHistory().toMutableList()
-
-
-        val favoriteIds = favoriteTrackDao.getFavoriteTrackIdsOnce().toSet()
-        history.forEach { track ->
-            track.isFavorite = track.trackId in favoriteIds
-        }
-
-        return history
+        return localStorage.getHistory()
     }
 
     override fun addTrack(track: Track) = localStorage.addTrack(track)

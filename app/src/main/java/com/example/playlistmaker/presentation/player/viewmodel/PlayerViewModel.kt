@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 
 private const val PROGRESS_UPDATE_DELAY = 300L
 
-
 private data class PlayerState(
     val isPrepared: Boolean = false,
     val isPlaying: Boolean = false
@@ -36,6 +35,7 @@ class PlayerViewModel(
     val isPlayingLive: LiveData<Boolean> = _isPlayingLive
 
     private var currentTrack: Track? = null
+
     private val _isFavorite = MutableLiveData(false)
     val isFavorite: LiveData<Boolean> = _isFavorite
 
@@ -75,9 +75,29 @@ class PlayerViewModel(
         stopProgressUpdates()
     }
 
-    fun setTrack(track: Track){
+    fun setTrack(track: Track) {
         currentTrack = track
-        _isFavorite.value = track.isFavorite
+
+
+        viewModelScope.launch {
+            _isFavorite.postValue(favoritesUseCase.isFavorite(track.trackId))
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+
+        viewModelScope.launch {
+            val nowFavorite = _isFavorite.value == true
+
+            if (nowFavorite) {
+                favoritesUseCase.removeTrack(track)
+                _isFavorite.postValue(false)
+            } else {
+                favoritesUseCase.addTrack(track)
+                _isFavorite.postValue(true)
+            }
+        }
     }
 
     private fun startProgressUpdates() {
@@ -89,21 +109,6 @@ class PlayerViewModel(
                 _time.value = formatTime(ms)
                 delay(PROGRESS_UPDATE_DELAY)
             }
-        }
-    }
-
-    fun onFavoriteClicked() {
-        val track = currentTrack ?: return
-
-        viewModelScope.launch {
-            if (track.isFavorite) {
-                favoritesUseCase.removeTrack(track)
-            } else {
-                favoritesUseCase.addTrack(track)
-            }
-
-            track.isFavorite = !track.isFavorite
-            _isFavorite.postValue(track.isFavorite)
         }
     }
 

@@ -31,8 +31,7 @@ object FavoriteTrackDbMapper {
             releaseDate = entity.releaseDate,
             primaryGenreName = entity.primaryGenreName,
             previewUrl = entity.previewUrl,
-            country = entity.country,
-            isFavorite = true
+            country = entity.country
         )
     }
 }

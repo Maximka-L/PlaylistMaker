@@ -13,8 +13,7 @@ val repositoryModule = module {
     single<TrackRepository> {
         TrackRepositoryImpl(
             networkClient = get(),
-            localStorage = get(),
-            favoriteTrackDao = get()
+            localStorage = get()
         )
     }
 
@@ -23,6 +22,8 @@ val repositoryModule = module {
     }
 
     single<FavoritesRepository> {
-        FavoritesRepositoryImpl(get())
+        FavoritesRepositoryImpl(
+            favoriteTrackDao = get()
+        )
     }
 }

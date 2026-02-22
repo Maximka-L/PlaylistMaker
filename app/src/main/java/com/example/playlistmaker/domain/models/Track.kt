@@ -14,9 +14,7 @@ data class Track(
     val releaseDate: String? = "",
     val primaryGenreName: String? = "",
     val previewUrl: String?,
-    val country: String? = "",
-    var isFavorite: Boolean = false
-
+    val country: String? = ""
 ) : Parcelable {
 
     fun getReleaseYear(): String {
@@ -27,11 +25,7 @@ data class Track(
         }
     }
 
-    fun getFormattedTime(): String {
-        return trackTime
-    }
+    fun getFormattedTime(): String = trackTime
 
-    fun getCoverArtwork(): String {
-        return artworkUrl100.replace("100x100", "512x512")
-    }
+    fun getCoverArtwork(): String = artworkUrl100.replace("100x100", "512x512")
 }
