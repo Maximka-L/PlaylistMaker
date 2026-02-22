@@ -24,4 +24,16 @@ class FavoritesUseCaseImpl(
     override suspend fun isFavorite(trackId: Int): Boolean {
         return favoritesRepository.isFavorite(trackId)
     }
+
+
+    override suspend fun toggleFavorite(track: Track): Boolean {
+        val currentlyFavorite = favoritesRepository.isFavorite(track.trackId)
+        return if (currentlyFavorite) {
+            favoritesRepository.removeTrack(track)
+            false
+        } else {
+            favoritesRepository.addTrack(track)
+            true
+        }
+    }
 }

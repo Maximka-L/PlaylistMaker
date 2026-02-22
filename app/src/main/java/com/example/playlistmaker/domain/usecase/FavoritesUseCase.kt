@@ -10,4 +10,6 @@ interface FavoritesUseCase {
 
     suspend fun isFavorite(trackId: Int): Boolean
 
+    suspend fun toggleFavorite(track: Track): Boolean
+
 }

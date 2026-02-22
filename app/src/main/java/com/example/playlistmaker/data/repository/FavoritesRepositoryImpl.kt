@@ -27,6 +27,6 @@ class FavoritesRepositoryImpl(
     }
 
     override suspend fun isFavorite(trackId: Int): Boolean {
-        return favoriteTrackDao.isFavoriteOnce(trackId)
+        return favoriteTrackDao.isFavorite(trackId)
     }
 }

@@ -88,14 +88,12 @@ class PlayerViewModel(
         val track = currentTrack ?: return
 
         viewModelScope.launch {
-            val nowFavorite = _isFavorite.value == true
+            runCatching {
+                favoritesUseCase.toggleFavorite(track)
+            }.onSuccess { newValue ->
+                _isFavorite.postValue(newValue)
+            }.onFailure {
 
-            if (nowFavorite) {
-                favoritesUseCase.removeTrack(track)
-                _isFavorite.postValue(false)
-            } else {
-                favoritesUseCase.addTrack(track)
-                _isFavorite.postValue(true)
             }
         }
     }
