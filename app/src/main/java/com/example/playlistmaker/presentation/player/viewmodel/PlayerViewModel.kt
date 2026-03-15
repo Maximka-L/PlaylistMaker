@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayer
 import com.example.playlistmaker.domain.usecase.FavoritesUseCase
+import com.example.playlistmaker.domain.usecase.PlaylistUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -19,14 +21,20 @@ private data class PlayerState(
     val isPlaying: Boolean = false
 )
 
+sealed class PlaylistAddStatus {
+    data class Added(val playlistName: String) : PlaylistAddStatus()
+    data class AlreadyExists(val playlistName: String) : PlaylistAddStatus()
+}
+
 class PlayerViewModel(
     private val audioPlayer: AudioPlayer,
-    private val favoritesUseCase: FavoritesUseCase
+    private val favoritesUseCase: FavoritesUseCase,
+    private val playlistUseCase: PlaylistUseCase
 ) : ViewModel() {
 
     private var playerState = PlayerState()
-
     private var progressJob: Job? = null
+    private var currentTrack: Track? = null
 
     private val _time = MutableLiveData("00:00")
     val time: LiveData<String> = _time
@@ -34,10 +42,26 @@ class PlayerViewModel(
     private val _isPlayingLive = MutableLiveData(false)
     val isPlayingLive: LiveData<Boolean> = _isPlayingLive
 
-    private var currentTrack: Track? = null
-
     private val _isFavorite = MutableLiveData(false)
     val isFavorite: LiveData<Boolean> = _isFavorite
+
+    private val _playlists = MutableLiveData<List<Playlist>>(emptyList())
+    val playlists: LiveData<List<Playlist>> = _playlists
+
+    private val _playlistAddStatus = MutableLiveData<PlaylistAddStatus?>()
+    val playlistAddStatus: LiveData<PlaylistAddStatus?> = _playlistAddStatus
+
+    init {
+        observePlaylists()
+    }
+
+    private fun observePlaylists() {
+        viewModelScope.launch {
+            playlistUseCase.getPlaylists().collect { list ->
+                _playlists.postValue(list)
+            }
+        }
+    }
 
     fun prepare(url: String) {
         audioPlayer.prepare(
@@ -77,8 +101,6 @@ class PlayerViewModel(
 
     fun setTrack(track: Track) {
         currentTrack = track
-
-
         viewModelScope.launch {
             _isFavorite.postValue(favoritesUseCase.isFavorite(track.trackId))
         }
@@ -86,16 +108,32 @@ class PlayerViewModel(
 
     fun onFavoriteClicked() {
         val track = currentTrack ?: return
-
         viewModelScope.launch {
             runCatching {
                 favoritesUseCase.toggleFavorite(track)
             }.onSuccess { newValue ->
                 _isFavorite.postValue(newValue)
-            }.onFailure {
-
             }
         }
+    }
+
+    fun onPlaylistClicked(playlist: Playlist) {
+        val track = currentTrack ?: return
+
+        viewModelScope.launch {
+            val added = playlistUseCase.addTrackToPlaylist(track, playlist)
+            _playlistAddStatus.postValue(
+                if (added) {
+                    PlaylistAddStatus.Added(playlist.name)
+                } else {
+                    PlaylistAddStatus.AlreadyExists(playlist.name)
+                }
+            )
+        }
+    }
+
+    fun clearPlaylistAddStatus() {
+        _playlistAddStatus.value = null
     }
 
     private fun startProgressUpdates() {

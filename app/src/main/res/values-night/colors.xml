@@ -41,4 +41,9 @@
     <color name="albumTextView">#AEAFB4</color>
     <color name="color_icon_status">#FFFFFF</color>
     <color name="ic_like">#FFFFFF</color>
+    <color name="toast_background">#FFFFFF</color>
+    <color name="toast_text">#1A1B22</color>
+    <color name="albumText">#FFFFFF</color>
+    <color name="input_media">#1A1B22</color>
+    <color name="tb_media">#1A1B22</color>
 </resources>

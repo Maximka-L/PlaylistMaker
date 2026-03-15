@@ -29,6 +29,7 @@
         android:label="@string/settings" />
 
     <!-- Audio Player -->
+    <!-- Audio Player -->
     <fragment
         android:id="@+id/audioPlayerFragment"
         android:name="com.example.playlistmaker.presentation.player.fragment.AudioPlayerFragment"
@@ -37,6 +38,15 @@
         <argument
             android:name="track"
             app:argType="com.example.playlistmaker.domain.models.Track" />
+
+        <action
+            android:id="@+id/action_audioPlayerFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.example.playlistmaker.presentation.playlist.fragment.CreatePlaylistFragment"
+        android:label="CreatePlaylistFragment" />
 
 </navigation>

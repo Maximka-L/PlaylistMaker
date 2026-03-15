@@ -6,9 +6,11 @@ import com.example.playlistmaker.domain.usecase.IGetThemeUseCase
 import com.example.playlistmaker.domain.usecase.IManageSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.ISetThemeUseCase
 import com.example.playlistmaker.domain.usecase.ManageSearchHistoryUseCase
+import com.example.playlistmaker.domain.usecase.PlaylistUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import com.example.playlistmaker.domain.usecase.SetThemeUseCase
 import com.example.playlistmaker.domain.usecase.impl.FavoritesUseCaseImpl
+import com.example.playlistmaker.domain.usecase.impl.PlaylistUseCaseImpl
 import com.example.playlistmaker.domain.usecase.impl.SearchTracksUseCaseImpl
 import org.koin.dsl.module
 
@@ -34,4 +36,9 @@ val useCaseModule = module {
         FavoritesUseCaseImpl(get())
     }
 
+    single<PlaylistUseCase> {
+        PlaylistUseCaseImpl(
+            playlistRepository = get()
+        )
+    }
 }

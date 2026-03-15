@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityRootBinding
+
 class RootActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRootBinding
@@ -24,7 +25,8 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavigation.isVisible =
-                destination.id != R.id.audioPlayerFragment
+                destination.id != R.id.audioPlayerFragment &&
+                        destination.id != R.id.createPlaylistFragment
         }
     }
 }
