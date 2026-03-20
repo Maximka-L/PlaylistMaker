@@ -112,15 +112,18 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
             when (status) {
                 is PlaylistAddStatus.Added -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                    showCustomToast("Добавлено в плейлист ${status.playlistName}")
+                    showCustomToast(
+                        getString(R.string.added_to_playlist, status.playlistName)
+                    )
                     viewModel.clearPlaylistAddStatus()
                 }
 
                 is PlaylistAddStatus.AlreadyExists -> {
-                    showCustomToast("Трек уже добавлен в плейлист ${status.playlistName}")
+                    showCustomToast(
+                        getString(R.string.track_already_in_playlist, status.playlistName)
+                    )
                     viewModel.clearPlaylistAddStatus()
                 }
-
                 null -> Unit
             }
         }

@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.media.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,9 +42,9 @@ class PlayListFragment : Fragment(R.layout.fragment_play_list) {
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
             val isEmpty = playlists.isEmpty()
 
-            binding.imageFragm.visibility = if (isEmpty) View.VISIBLE else View.GONE
-            binding.emptyText.visibility = if (isEmpty) View.VISIBLE else View.GONE
-            binding.playlistsRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.imageFragm.isVisible = isEmpty
+            binding.emptyText.isVisible = isEmpty
+            binding.playlistsRecyclerView.isVisible = !isEmpty
 
             adapter.submitList(playlists)
         }

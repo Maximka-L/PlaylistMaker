@@ -42,12 +42,11 @@ class PlaylistBottomSheetAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Playlist) {
-            binding.playlistNameText.text = item.name
-            binding.playlistCountText.text = when {
-                item.tracksCount % 10 == 1 && item.tracksCount % 100 != 11 -> "${item.tracksCount} трек"
-                item.tracksCount % 10 in 2..4 && item.tracksCount % 100 !in 12..14 -> "${item.tracksCount} трека"
-                else -> "${item.tracksCount} треков"
-            }
+            binding.playlistCountText.text = itemView.resources.getQuantityString(
+                R.plurals.tracks_count,
+                item.tracksCount,
+                item.tracksCount
+            )
 
             if (item.coverPath.isNotBlank()) {
                 binding.playlistCoverImage.setImageURI(Uri.fromFile(File(item.coverPath)))

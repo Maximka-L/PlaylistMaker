@@ -88,7 +88,10 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
 
             findNavController().previousBackStackEntry
                 ?.savedStateHandle
-                ?.set("playlist_created_message", "Плейлист $name создан")
+                ?.set(
+                    "playlist_created_message",
+                    getString(R.string.playlist_created, name)
+                )
 
             findNavController().popBackStack()
         }
@@ -112,10 +115,10 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
 
     private fun showExitConfirmationDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNegativeButton("Отмена", null)
-            .setPositiveButton("Завершить") { _, _ ->
+            .setTitle(getString(R.string.finish_playlist_creation_title))
+            .setMessage(getString(R.string.finish_playlist_creation_message))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.finish)) { _, _ ->
                 findNavController().popBackStack()
             }
             .show()
