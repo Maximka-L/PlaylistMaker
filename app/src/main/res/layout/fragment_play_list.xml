@@ -4,23 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.media.fragment.TrackFragment">
+    tools:context=".presentation.media.fragment.PlayListFragment">
 
-
-
-    <TextView
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/empty_button"
+        style="@style/ButtonSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?android:textColorPrimary"
+        android:text="@string/new_pl"
+        android:textColor="@color/textColor"
+        app:cornerRadius="20dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_fragm"
-        android:textColor="?android:textColorPrimary"
-        android:text="@string/track_list_play"
-        android:fontFamily="@font/ys_display_medium"
-        android:textSize="19sp"
-        android:textFontWeight="400"
-        android:gravity="center_horizontal"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/empty_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_playlist" />
 
     <ImageView
         android:id="@+id/image_fragm"
@@ -28,22 +42,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="106dp"
         android:src="@drawable/ic_light_mode"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/empty_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/empty_button"
-        style="@style/ButtonSearch"
+    <TextView
+        android:id="@+id/emptyText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="?android:textColorPrimary"
-        android:text="@string/new_pl"
-        android:textColor="@color/textColor"
-        app:cornerRadius="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:text="@string/track_list_play"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="19sp"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/image_fragm"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

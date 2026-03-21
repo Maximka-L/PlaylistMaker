@@ -56,9 +56,18 @@ val dataModule = module {
     single {
         NetworkClient(api = get(), context = androidContext())
     }
-
-    single { Room.databaseBuilder(androidContext(), AppDatabase::class.java,"playlist_maker.db").build()
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "playlist_maker.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
+
     single { get<AppDatabase>().favoriteTrackDao() }
+    single { get<AppDatabase>().playlistDao() }
+    single { get<AppDatabase>().playlistTrackDao() }
 
 }

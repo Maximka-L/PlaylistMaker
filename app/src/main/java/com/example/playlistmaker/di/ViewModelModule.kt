@@ -6,6 +6,8 @@ import com.example.playlistmaker.presentation.search.viewmodel.SearchViewModel
 import com.example.playlistmaker.presentation.setting.viewmodel.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import com.example.playlistmaker.presentation.playlist.viewmodel.CreatePlaylistViewModel
+import com.example.playlistmaker.presentation.media.view_model.PlayListFragmentViewModel
 
 val viewModelModule = module {
 
@@ -24,12 +26,27 @@ val viewModelModule = module {
     }
 
     viewModel {
-        PlayerViewModel(audioPlayer = get(),
-            favoritesUseCase = get())
+        PlayerViewModel(
+            audioPlayer = get(),
+            favoritesUseCase = get(),
+            playlistUseCase = get()
+        )
     }
 
     viewModel {
         FavoritesViewModel(get())
+    }
+
+    viewModel {
+        CreatePlaylistViewModel(
+            playlistUseCase = get()
+        )
+    }
+
+    viewModel {
+        PlayListFragmentViewModel(
+            playlistUseCase = get()
+        )
     }
 
 }

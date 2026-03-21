@@ -39,13 +39,23 @@
     <color name="play_icon_color">#1A1B22</color>
     <color name="mini_icon_color">#1A1B22</color>
     <color name="yn_color">#1A1B22</color>
-    <color name="albumTextView">#AEAFB4</color> primary
+    <color name="albumTextView">#AEAFB4</color>
     <color name="primary">#3772E7</color>
     <color name="color_icon_bar">#3772E7</color>
     <color name="color_icon_status">#1A1B22</color>
     <color name="bottom_nav_divider">#E6E8EB</color>
     <color name="ic_favorite">#E6E8EB</color>
     <color name="ic_like">#1A1B22</color>
-
+    <color name="not_active">#AEAFB4</color>
+    <color name="color_icon_setting">#AEAFB4</color>
+    <color name="create_playlist_active">#3772E7</color>
+    <color name="background_sheet">#99000000</color>
+    <color name="toast_background">#1A1B22</color>
+    <color name="snackbar_background">#3772E7</color>
+    <color name="snackbar_text">#FFFFFF</color>
+    <color name="toast_text">#FFFFFF</color>
+    <color name="albumText">#1A1B22</color>
+    <color name="input_media">#FFFFFF</color>
+    <color name="tb_media">#FFFFFF</color>
 
 </resources>
