@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.media.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,7 +19,10 @@ class PlayListFragment : Fragment(R.layout.fragment_play_list) {
     private val binding get() = _binding!!
 
     private val viewModel: PlayListFragmentViewModel by viewModel()
-    private val adapter = PlayListAdapter()
+
+    private val adapter = PlayListAdapter { playlist ->
+        openPlaylist(playlist.id)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,6 +52,13 @@ class PlayListFragment : Fragment(R.layout.fragment_play_list) {
 
             adapter.submitList(playlists)
         }
+    }
+
+    private fun openPlaylist(playlistId: Long) {
+        requireParentFragment().findNavController().navigate(
+            R.id.action_mediaFragment_to_playlistFragment,
+            bundleOf("playlistId" to playlistId)
+        )
     }
 
     override fun onDestroyView() {

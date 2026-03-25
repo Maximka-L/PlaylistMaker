@@ -2,7 +2,7 @@
     <color name="button_text">#000000</color>
     <color name="button_background">#FFFFFF</color>
     <color name="background">#1A1B22</color>
-    <color name="text_primary">#FF000000</color>
+    <color name="text_primary">#1A1B22</color>
     <color name="icon_color">#FF000000</color>
     <color name="light_blue_background">#2B2B2B</color>
     <color name="white">#FFFFFFFF</color>
@@ -46,4 +46,10 @@
     <color name="albumText">#FFFFFF</color>
     <color name="input_media">#1A1B22</color>
     <color name="tb_media">#1A1B22</color>
+    <color name="playlist_bg_bg">#E6E8EB</color>
+    <color name="front">#2B2B2B</color>
+    <color name="bottom_nav_divider">#2B2B2B</color>
+    <color name="playlist_header_bg">#2B2B2B</color>
+    <color name="ic_favorite">#2B2B2B</color>
+    <color name="bottom_sheet_bg">#1A1B22</color>
 </resources>

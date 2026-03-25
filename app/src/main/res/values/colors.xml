@@ -57,5 +57,8 @@
     <color name="albumText">#1A1B22</color>
     <color name="input_media">#FFFFFF</color>
     <color name="tb_media">#FFFFFF</color>
-
+    <color name="playlist_header_bg">#F5F5F5</color>
+    <color name="playlist_bg_bg">#E6E8EB</color>
+    <color name="bottom_sheet_bg">#FFFFFF</color>
+    <color name="dialog_button_color">#3772E7</color>
 </resources>

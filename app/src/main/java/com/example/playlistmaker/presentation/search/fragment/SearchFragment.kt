@@ -88,14 +88,20 @@ class SearchFragment : Fragment() {
     }
 
     private fun initRecycler() {
-        historyAdapter = TracksAdapter(emptyList()) { track ->
-            viewModel.onTrackClicked(track)
-        }
+        historyAdapter = TracksAdapter(
+            dataset = emptyList(),
+            onItemClick = { track ->
+                viewModel.onTrackClicked(track)
+            }
+        )
         historyRecycler.adapter = historyAdapter
 
-        searchResultsAdapter = TracksAdapter(emptyList()) { track ->
-            viewModel.onTrackClicked(track)
-        }
+        searchResultsAdapter = TracksAdapter(
+            dataset = emptyList(),
+            onItemClick = { track ->
+                viewModel.onTrackClicked(track)
+            }
+        )
         searchResultsRecycler.adapter = searchResultsAdapter
     }
 
@@ -202,12 +208,11 @@ class SearchFragment : Fragment() {
 
         if (isInternetError) {
             emptyIcon.setImageResource(R.drawable.ic_not_int)
-            emptyText.text =
-                "Проблемы со связью\nЗагрузка не удалась. Проверьте подключение к интернету"
+            emptyText.text = getString(R.string.error_no_connection)
             emptyButton.isVisible = true
         } else {
             emptyIcon.setImageResource(R.drawable.ic_light_mode)
-            emptyText.text = "Ничего не нашлось"
+            emptyText.text = getString(R.string.nothing_was_found)
             emptyButton.isVisible = false
         }
     }

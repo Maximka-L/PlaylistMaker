@@ -8,6 +8,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import com.example.playlistmaker.presentation.playlist.viewmodel.CreatePlaylistViewModel
 import com.example.playlistmaker.presentation.media.view_model.PlayListFragmentViewModel
+import com.example.playlistmaker.presentation.playlist.viewmodel.PlaylistViewModel
+import com.example.playlistmaker.presentation.playlist.viewmodel.EditPlaylistViewModel
 
 val viewModelModule = module {
 
@@ -47,6 +49,17 @@ val viewModelModule = module {
         PlayListFragmentViewModel(
             playlistUseCase = get()
         )
+    }
+
+    viewModel {
+        PlaylistViewModel(
+            playlistUseCase = get()
+        )
+    }
+
+    viewModel {
+        EditPlaylistViewModel(
+            playlistUseCase = get())
     }
 
 }

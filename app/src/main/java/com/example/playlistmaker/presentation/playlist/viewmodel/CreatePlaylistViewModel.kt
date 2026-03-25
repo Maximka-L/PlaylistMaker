@@ -8,7 +8,7 @@ import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.usecase.PlaylistUseCase
 import kotlinx.coroutines.launch
 
-class CreatePlaylistViewModel(
+open class CreatePlaylistViewModel(
     private val playlistUseCase: PlaylistUseCase
 ) : ViewModel() {
 
