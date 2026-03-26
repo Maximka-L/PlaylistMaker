@@ -74,6 +74,11 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
             halfExpandedRatio = 0.6f
         }
 
+        binding.root.post {
+            val screenHeight = binding.root.height
+            bottomSheetBehavior.peekHeight = (screenHeight * 2 / 3)
+        }
+
         binding.overlay.visibility = View.GONE
         binding.overlay.alpha = 0.6f
 
