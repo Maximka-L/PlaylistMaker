@@ -77,6 +77,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         binding.root.post {
             val screenHeight = binding.root.height
             bottomSheetBehavior.peekHeight = (screenHeight * 2 / 3)
+            bottomSheetBehavior.maxHeight = (screenHeight * 2 / 3)
         }
 
         binding.overlay.visibility = View.GONE
@@ -148,7 +149,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         }
 
         binding.addToPlaylistButton.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         binding.overlay.setOnClickListener {

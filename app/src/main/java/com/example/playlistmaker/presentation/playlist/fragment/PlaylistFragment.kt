@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.playlist.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.playlist.viewmodel.PlaylistEvent
 import com.example.playlistmaker.presentation.playlist.viewmodel.PlaylistViewModel
 import com.example.playlistmaker.presentation.search.adapter.TracksAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,6 +31,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
 
     private val viewModel: PlaylistViewModel by viewModel()
 
+    private lateinit var menuSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var tracksAdapter: TracksAdapter
 
     private var playlistId: Long = 0L
@@ -63,10 +66,28 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
     }
 
     private fun initMenu() {
+        menuSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                        binding.overlay.visibility = View.GONE
+                        binding.tracksBottomSheet.visibility = View.VISIBLE
+                    }
+                }
+                override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+            })
+        }
+
+        binding.root.post {
+            val screenHeight = binding.root.height
+            menuSheetBehavior.maxHeight = (screenHeight * 2 / 4)
+        }
+
         binding.moreButton.setOnClickListener {
             binding.overlay.visibility = View.VISIBLE
-            binding.menuBottomSheet.visibility = View.VISIBLE
             binding.tracksBottomSheet.visibility = View.GONE
+            menuSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         binding.overlay.setOnClickListener {
@@ -94,9 +115,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
     }
 
     private fun hideMenu() {
-        binding.overlay.visibility = View.GONE
-        binding.menuBottomSheet.visibility = View.GONE
-        binding.tracksBottomSheet.visibility = View.VISIBLE
+        menuSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun getTracksCountText(): String {
