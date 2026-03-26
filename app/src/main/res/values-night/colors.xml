@@ -38,7 +38,7 @@
     <color name="play_icon_color">#FFFFFF</color>
     <color name="mini_icon_color">#FFFFFF</color>
     <color name="yn_color">#FFFFFF</color>
-    <color name="albumTextView">#AEAFB4</color>
+    <color name="albumTextView">#FFFFFF</color>
     <color name="color_icon_status">#FFFFFF</color>
     <color name="ic_like">#FFFFFF</color>
     <color name="toast_background">#FFFFFF</color>
