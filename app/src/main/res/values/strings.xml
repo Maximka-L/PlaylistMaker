@@ -74,7 +74,7 @@
     <string name="save">Сохранить</string>
     <string name="delete_playlist_cancel">НЕТ</string>
     <string name="delete_playlist_confirm">ДА</string>
-
+    <string name="empty_playlist_tracks">В этом плейлисте нет треков</string>
     <plurals name="tracks_count">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>

@@ -127,6 +127,18 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bottom_sheet_handle" />
 
+        <TextView
+            android:id="@+id/emptyTracksText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/empty_playlist_tracks"
+            android:textColor="@color/text_primary_ic_black"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tracksRecyclerView"
             android:layout_width="match_parent"

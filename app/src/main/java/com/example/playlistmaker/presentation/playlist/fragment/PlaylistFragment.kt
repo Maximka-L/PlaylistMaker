@@ -246,6 +246,8 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
 
         viewModel.tracks.observe(viewLifecycleOwner) { tracks ->
             tracksAdapter.updateDataset(tracks)
+            binding.emptyTracksText.visibility = if (tracks.isEmpty()) View.VISIBLE else View.GONE
+            binding.tracksRecyclerView.visibility = if (tracks.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 
