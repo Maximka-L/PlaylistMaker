@@ -3,8 +3,6 @@ package com.example.playlistmaker.presentation.playlist.fragment
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.playlist.viewmodel.EditPlaylistViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,20 +23,6 @@ class EditPlaylistFragment : CreatePlaylistFragment() {
 
         binding.toolbar.title = getString(R.string.edit_playlist_title)
         binding.createButton.text = getString(R.string.save)
-
-        viewModel.coverUri.observe(viewLifecycleOwner) { uriString ->
-            if (!uriString.isNullOrEmpty()) {
-                val file = File(uriString)
-                if (file.exists()) {
-                    Glide.with(this)
-                        .load(file)
-                        .transition(DrawableTransitionOptions.withCrossFade(300))
-                        .centerCrop()
-                        .into(binding.coverBackground)
-                    binding.coverAddIcon.visibility = View.GONE
-                }
-            }
-        }
 
         viewModel.originalPlaylist.observe(viewLifecycleOwner) { playlist ->
             if (playlist != null) {
@@ -65,6 +49,11 @@ class EditPlaylistFragment : CreatePlaylistFragment() {
         } ?: viewModel.getOriginalPlaylist()?.coverPath ?: ""
 
         viewModel.updatePlaylist(name, description, coverPath)
+
+        findNavController().previousBackStackEntry
+            ?.savedStateHandle
+            ?.set("playlist_updated", true)
+
         findNavController().popBackStack()
     }
 }

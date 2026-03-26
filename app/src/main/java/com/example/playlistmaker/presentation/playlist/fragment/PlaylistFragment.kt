@@ -51,6 +51,15 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
         initRecyclerView()
         observeViewModel()
         viewModel.loadPlaylist(playlistId)
+
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>("playlist_updated")
+            ?.observe(viewLifecycleOwner) { updated ->
+                if (updated == true) {
+                    viewModel.loadPlaylist(playlistId)
+                }
+            }
     }
 
     private fun initMenu() {

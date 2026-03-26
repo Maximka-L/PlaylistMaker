@@ -5,8 +5,10 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
 
         <item name="colorControlNormal">@color/text_primary</item>
+        <item name="colorControlActivated">#3772E7</item>
 
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
+
 </resources>
