@@ -68,6 +68,8 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
     private fun initMenu() {
         menuSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
+            isFitToContents = true
+            isHideable = true
             addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     if (newState == BottomSheetBehavior.STATE_HIDDEN) {
@@ -77,11 +79,6 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
                 }
                 override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
             })
-        }
-
-        binding.root.post {
-            val screenHeight = binding.root.height
-            menuSheetBehavior.maxHeight = (screenHeight * 2 / 4)
         }
 
         binding.moreButton.setOnClickListener {
