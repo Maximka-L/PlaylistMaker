@@ -27,7 +27,9 @@ class EditPlaylistFragment : CreatePlaylistFragment() {
         viewModel.originalPlaylist.observe(viewLifecycleOwner) { playlist ->
             if (playlist != null) {
                 binding.playlistNameEditText.setText(playlist.name)
+                binding.playlistNameEditText.isActivated = playlist.name.isNotBlank()
                 binding.playlistDescriptionEditText.setText(playlist.description)
+                binding.playlistDescriptionEditText.isActivated = playlist.description.isNotBlank()
             }
         }
     }

@@ -46,7 +46,12 @@ open class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) 
         updateCreateButtonState(false)
 
         binding.playlistNameEditText.doAfterTextChanged { text ->
+            binding.playlistNameEditText.isActivated = !text.isNullOrBlank()
             updateCreateButtonState(!text.isNullOrBlank())
+        }
+
+        binding.playlistDescriptionEditText.doAfterTextChanged { text ->
+            binding.playlistDescriptionEditText.isActivated = !text.isNullOrBlank()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
