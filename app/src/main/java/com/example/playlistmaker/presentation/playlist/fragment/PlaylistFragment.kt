@@ -81,6 +81,15 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
             })
         }
 
+        binding.shareButton.post {
+            val tracksBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
+            val screenHeight = binding.root.height
+            val location = IntArray(2)
+            binding.shareButton.getLocationInWindow(location)
+            val shareButtonBottomInWindow = location[1] + binding.shareButton.height
+            tracksBehavior.peekHeight = screenHeight - shareButtonBottomInWindow - 16
+        }
+
         binding.moreButton.setOnClickListener {
             binding.overlay.visibility = View.VISIBLE
             binding.tracksBottomSheet.visibility = View.GONE
