@@ -81,15 +81,6 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
             })
         }
 
-        binding.shareButton.post {
-            val tracksBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
-            val screenHeight = binding.root.height
-            val location = IntArray(2)
-            binding.shareButton.getLocationInWindow(location)
-            val shareButtonBottomInWindow = location[1] + binding.shareButton.height
-            tracksBehavior.peekHeight = screenHeight - shareButtonBottomInWindow - 16
-        }
-
         binding.moreButton.setOnClickListener {
             binding.overlay.visibility = View.VISIBLE
             binding.tracksBottomSheet.visibility = View.GONE
@@ -122,6 +113,18 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
 
     private fun hideMenu() {
         menuSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun updateTracksPeekHeight() {
+        binding.shareButton.post {
+            if (_binding == null) return@post
+            val tracksBehavior = BottomSheetBehavior.from(binding.tracksBottomSheet)
+            val screenHeight = binding.root.height
+            val location = IntArray(2)
+            binding.shareButton.getLocationInWindow(location)
+            val shareButtonBottomInWindow = location[1] + binding.shareButton.height
+            tracksBehavior.peekHeight = screenHeight - shareButtonBottomInWindow - 16
+        }
     }
 
     private fun getTracksCountText(): String {
@@ -219,6 +222,8 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist_info) {
                 binding.playlistCover.setImageResource(R.drawable.ic_placeholder1)
                 binding.menuPlaylistCover.setImageResource(R.drawable.ic_placeholder1)
             }
+
+            updateTracksPeekHeight()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
