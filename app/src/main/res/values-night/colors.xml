@@ -2,7 +2,7 @@
     <color name="button_text">#000000</color>
     <color name="button_background">#FFFFFF</color>
     <color name="background">#1A1B22</color>
-    <color name="text_primary">#FF000000</color>
+    <color name="text_primary">#1A1B22</color>
     <color name="icon_color">#FF000000</color>
     <color name="light_blue_background">#2B2B2B</color>
     <color name="white">#FFFFFFFF</color>
@@ -38,7 +38,7 @@
     <color name="play_icon_color">#FFFFFF</color>
     <color name="mini_icon_color">#FFFFFF</color>
     <color name="yn_color">#FFFFFF</color>
-    <color name="albumTextView">#AEAFB4</color>
+    <color name="albumTextView">#FFFFFF</color>
     <color name="color_icon_status">#FFFFFF</color>
     <color name="ic_like">#FFFFFF</color>
     <color name="toast_background">#FFFFFF</color>
@@ -46,4 +46,15 @@
     <color name="albumText">#FFFFFF</color>
     <color name="input_media">#1A1B22</color>
     <color name="tb_media">#1A1B22</color>
+    <color name="playlist_bg_bg">#E6E8EB</color>
+    <color name="front">#FFFFFF</color>
+    <color name="bottom_nav_divider">#2B2B2B</color>
+    <color name="playlist_header_bg">#2B2B2B</color>
+    <color name="ic_favorite">#2B2B2B</color>
+    <color name="bottom_sheet_bg">#1A1B22</color>
+    <color name="menu_sheet_bg">#1A1B22</color>
+    <color name="menu_text_color">#FFFFFF</color>
+    <color name="bottom_sheet_handle">#FFFFFF</color>
+    <color name="bottom_sheet_handle_color">#FFFFFF</color>
+    <color name="text_primary_ic_black">#FFFFFF</color>
 </resources>

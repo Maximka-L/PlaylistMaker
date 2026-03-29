@@ -47,7 +47,7 @@ class PlaylistBottomSheetAdapter(
                 item.tracksCount,
                 item.tracksCount
             )
-
+            binding.playlistNameText.text = item.name
             if (item.coverPath.isNotBlank()) {
                 binding.playlistCoverImage.setImageURI(Uri.fromFile(File(item.coverPath)))
             } else {

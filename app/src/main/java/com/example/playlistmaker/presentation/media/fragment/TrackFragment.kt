@@ -20,7 +20,10 @@ class TrackFragment : Fragment(R.layout.fragment_track) {
     private val viewModel: FavoritesViewModel by viewModel()
 
     private val adapter by lazy {
-        TracksAdapter(emptyList()) { track -> openPlayer(track) }
+        TracksAdapter(
+            dataset = emptyList(),
+            onItemClick = { track -> openPlayer(track) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +55,6 @@ class TrackFragment : Fragment(R.layout.fragment_track) {
 
     private fun openPlayer(track: Track) {
         val bundle = Bundle().apply { putParcelable("track", track) }
-
 
         requireParentFragment().findNavController().navigate(
             R.id.audioPlayerFragment,

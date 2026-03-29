@@ -9,7 +9,9 @@ import com.example.playlistmaker.databinding.ItemPlaylistBinding
 import com.example.playlistmaker.domain.models.Playlist
 import java.io.File
 
-class PlayListAdapter : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>() {
+class PlayListAdapter(
+    private val onClick: (Playlist) -> Unit
+) : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>() {
 
     private val items = mutableListOf<Playlist>()
 
@@ -29,7 +31,7 @@ class PlayListAdapter : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>
     }
 
     override fun onBindViewHolder(holder: PlayListViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position], onClick)
     }
 
     override fun getItemCount(): Int = items.size
@@ -38,7 +40,7 @@ class PlayListAdapter : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>
         private val binding: ItemPlaylistBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Playlist) {
+        fun bind(item: Playlist, onClick: (Playlist) -> Unit) {
             binding.playlistNameText.text = item.name
             binding.playlistCountText.text = getTrackCountText(item.tracksCount)
 
@@ -50,6 +52,11 @@ class PlayListAdapter : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>
                 binding.playlistCoverImage.setImageResource(
                     R.drawable.ic_playlist_placeholder
                 )
+            }
+
+
+            itemView.setOnClickListener {
+                onClick(item)
             }
         }
 

@@ -20,15 +20,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
-class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
+open class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
 
-    private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected var _binding: FragmentCreatePlaylistBinding? = null
+    protected val binding get() = _binding!!
 
-    private val viewModel: CreatePlaylistViewModel by viewModel()
+    protected open val viewModel: CreatePlaylistViewModel by viewModel()
 
     private var isImagePickerOpening = false
-    private var isPlaylistCreated = false
+    protected var isPlaylistCreated = false
 
     private val pickMedia =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -46,7 +46,12 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
         updateCreateButtonState(false)
 
         binding.playlistNameEditText.doAfterTextChanged { text ->
+            binding.playlistNameEditText.isActivated = !text.isNullOrBlank()
             updateCreateButtonState(!text.isNullOrBlank())
+        }
+
+        binding.playlistDescriptionEditText.doAfterTextChanged { text ->
+            binding.playlistDescriptionEditText.isActivated = !text.isNullOrBlank()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -69,35 +74,11 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
         observeViewModel()
 
         binding.createButton.setOnClickListener {
-            val name = binding.playlistNameEditText.text.toString().trim()
-            val description = binding.playlistDescriptionEditText.text.toString().trim()
-
-            if (name.isBlank()) return@setOnClickListener
-
-            val coverPath = viewModel.coverUri.value?.let { uriString ->
-                saveImageToPrivateStorage(Uri.parse(uriString))
-            } ?: ""
-
-            viewModel.createPlaylist(
-                name = name,
-                description = description,
-                coverPath = coverPath
-            )
-
-            isPlaylistCreated = true
-
-            findNavController().previousBackStackEntry
-                ?.savedStateHandle
-                ?.set(
-                    "playlist_created_message",
-                    getString(R.string.playlist_created, name)
-                )
-
-            findNavController().popBackStack()
+            handleSaveAction()
         }
     }
 
-    private fun handleBackAction() {
+    protected open fun handleBackAction() {
         if (hasUnsavedChanges()) {
             showExitConfirmationDialog()
         } else {
@@ -105,7 +86,27 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
         }
     }
 
-    private fun hasUnsavedChanges(): Boolean {
+    protected open fun handleSaveAction() {
+        val name = binding.playlistNameEditText.text.toString().trim()
+        val description = binding.playlistDescriptionEditText.text.toString().trim()
+
+        if (name.isBlank()) return
+
+        val coverPath = viewModel.coverUri.value?.let { uriString ->
+            saveImageToPrivateStorage(Uri.parse(uriString))
+        } ?: ""
+
+        viewModel.createPlaylist(name = name, description = description, coverPath = coverPath)
+        isPlaylistCreated = true
+
+        findNavController().previousBackStackEntry
+            ?.savedStateHandle
+            ?.set("playlist_created_message", getString(R.string.playlist_created, name))
+
+        findNavController().popBackStack()
+    }
+
+    protected fun hasUnsavedChanges(): Boolean {
         if (isPlaylistCreated) return false
 
         return binding.playlistNameEditText.text?.isNotBlank() == true ||
@@ -147,7 +148,7 @@ class CreatePlaylistFragment : Fragment(R.layout.fragment_create_playlist) {
         )
     }
 
-    private fun saveImageToPrivateStorage(uri: Uri): String {
+    protected fun saveImageToPrivateStorage(uri: Uri): String {
         val picturesDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val filePath = File(picturesDir, "playlist_covers")
 

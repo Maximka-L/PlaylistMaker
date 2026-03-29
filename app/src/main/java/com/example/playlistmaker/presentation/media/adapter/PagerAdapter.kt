@@ -1,7 +1,6 @@
 package com.example.playlistmaker.presentation.media.adapter
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.playlistmaker.presentation.media.fragment.PlayListFragment
 import com.example.playlistmaker.presentation.media.fragment.TrackFragment
@@ -16,5 +15,3 @@ class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
             else -> PlayListFragment.newInstance()
         }
 }
-
-

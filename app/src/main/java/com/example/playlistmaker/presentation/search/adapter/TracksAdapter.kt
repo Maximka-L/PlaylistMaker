@@ -12,10 +12,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 
-
 class TracksAdapter(
     private var dataset: List<Track>,
-    private val onItemClick: (Track) -> Unit
+    private val onItemClick: (Track) -> Unit,
+    private val onItemLongClick: ((Track) -> Unit)? = null
 ) : RecyclerView.Adapter<TracksAdapter.TrackViewHolder>() {
 
     inner class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,12 +33,21 @@ class TracksAdapter(
                 .load(track.artworkUrl100)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.ic_placeholder)
-                .transform(RoundedCorners(itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_small)))
+                .error(R.drawable.ic_placeholder)
+                .transform(
+                    RoundedCorners(
+                        itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_small)
+                    )
+                )
                 .into(ivArtwork)
 
-            // Обработка клика
             itemView.setOnClickListener {
                 onItemClick(track)
+            }
+
+            itemView.setOnLongClickListener {
+                onItemLongClick?.invoke(track)
+                true
             }
         }
     }

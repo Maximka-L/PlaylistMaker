@@ -17,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:navigationIcon="@drawable/back"
+            app:navigationIcon="@drawable/ic_back"
             android:title="@string/player" />
 
         <androidx.core.widget.NestedScrollView
@@ -272,8 +272,7 @@
     <LinearLayout
         android:id="@+id/playlists_bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet_bgg"
         android:orientation="vertical"
         android:paddingStart="16dp"
@@ -281,8 +280,15 @@
         android:paddingEnd="16dp"
         android:paddingBottom="24dp"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="400dp"
+        app:behavior_peekHeight="0dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bottom_sheet_handle" />
 
         <TextView
             android:id="@+id/playlistsTitleTextView"
