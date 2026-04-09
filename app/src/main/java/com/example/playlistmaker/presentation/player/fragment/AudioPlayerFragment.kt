@@ -99,9 +99,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         }
 
         viewModel.isPlayingLive.observe(viewLifecycleOwner) { playing ->
-            binding.playButton.setImageResource(
-                if (playing) R.drawable.ic_pause else R.drawable.ic_play
-            )
+            binding.playButton.setIsPlaying(playing)
         }
 
         viewModel.isFavorite.observe(viewLifecycleOwner) { isFav ->
