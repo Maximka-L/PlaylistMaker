@@ -49,7 +49,7 @@ class PlaybackButtonView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        drawRect = RectF(0f, 0f, w.toFloat(), h.toFloat())
+        drawRect.set(0f, 0f, w.toFloat(), h.toFloat())
     }
 
     override fun onDraw(canvas: Canvas) {
