@@ -121,7 +121,6 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
                     )
                     viewModel.clearPlaylistAddStatus()
                 }
-
                 is PlaylistAddStatus.AlreadyExists -> {
                     showCustomToast(
                         getString(R.string.track_already_in_playlist, status.playlistName)
@@ -134,7 +133,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
     }
 
     private fun setupListeners() {
-        binding.playButton.setOnClickListener {
+        binding.playButton.onPlaybackClick = {
             viewModel.toggle()
         }
 

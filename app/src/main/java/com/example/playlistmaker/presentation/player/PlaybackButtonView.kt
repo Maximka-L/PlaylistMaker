@@ -25,13 +25,13 @@ class PlaybackButtonView @JvmOverloads constructor(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var drawRect = RectF()
 
+    var onPlaybackClick: (() -> Unit)? = null
+
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.PlaybackButtonView).use { ta ->
-            val playDrawable = ta.getDrawable(R.styleable.PlaybackButtonView_playIcon)
-            val pauseDrawable = ta.getDrawable(R.styleable.PlaybackButtonView_pauseIcon)
-            playBitmap = drawableToBitmap(playDrawable)
-            pauseBitmap = drawableToBitmap(pauseDrawable)
-        }
+        val ta = context.obtainStyledAttributes(attrs, R.styleable.PlaybackButtonView)
+        playBitmap = drawableToBitmap(ta.getDrawable(R.styleable.PlaybackButtonView_playIcon))
+        pauseBitmap = drawableToBitmap(ta.getDrawable(R.styleable.PlaybackButtonView_pauseIcon))
+        ta.recycle()
     }
 
     private fun drawableToBitmap(drawable: Drawable?): Bitmap? {
@@ -66,15 +66,11 @@ class PlaybackButtonView @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 isPlaying = !isPlaying
                 invalidate()
-                performClick()
+                onPlaybackClick?.invoke()
                 return true
             }
         }
         return super.onTouchEvent(event)
-    }
-
-    override fun performClick(): Boolean {
-        return super.performClick()
     }
 
     fun setIsPlaying(playing: Boolean) {
