@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.player.AudioPlayer
 import com.example.playlistmaker.domain.usecase.FavoritesUseCase
 import com.example.playlistmaker.domain.usecase.PlaylistUseCase
+import com.example.playlistmaker.presentation.player.service.PlayerServiceController
+import com.example.playlistmaker.presentation.player.service.PlayerStateListener
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -16,24 +17,20 @@ import kotlinx.coroutines.launch
 
 private const val PROGRESS_UPDATE_DELAY = 300L
 
-private data class PlayerState(
-    val isPrepared: Boolean = false,
-    val isPlaying: Boolean = false
-)
-
 sealed class PlaylistAddStatus {
     data class Added(val playlistName: String) : PlaylistAddStatus()
     data class AlreadyExists(val playlistName: String) : PlaylistAddStatus()
 }
 
 class PlayerViewModel(
-    private val audioPlayer: AudioPlayer,
     private val favoritesUseCase: FavoritesUseCase,
     private val playlistUseCase: PlaylistUseCase
 ) : ViewModel() {
 
-    private var playerState = PlayerState()
+    private var serviceController: PlayerServiceController? = null
     private var progressJob: Job? = null
+    private var isPrepared = false
+    private var isPlaying = false
     private var currentTrack: Track? = null
 
     private val _time = MutableLiveData("00:00")
@@ -48,7 +45,7 @@ class PlayerViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>(emptyList())
     val playlists: LiveData<List<Playlist>> = _playlists
 
-    private val _playlistAddStatus = MutableLiveData<PlaylistAddStatus?>()
+    private val _playlistAddStatus = MutableLiveData<PlaylistAddStatus?>(null)
     val playlistAddStatus: LiveData<PlaylistAddStatus?> = _playlistAddStatus
 
     init {
@@ -63,40 +60,52 @@ class PlayerViewModel(
         }
     }
 
-    fun prepare(url: String) {
-        audioPlayer.prepare(
-            url = url,
-            onPrepared = {
-                playerState = playerState.copy(isPrepared = true, isPlaying = false)
-                _isPlayingLive.postValue(false)
-                _time.postValue("00:00")
-            },
-            onCompletion = {
-                stopProgressUpdates()
-                playerState = playerState.copy(isPlaying = false)
-                _isPlayingLive.postValue(false)
-                _time.postValue("00:00")
+    fun onServiceConnected(controller: PlayerServiceController) {
+        serviceController = controller
+        controller.setOnPlayerStateListener(object : PlayerStateListener {
+            override fun onPlaying() {
+                isPrepared = true
+                isPlaying = true
+                _isPlayingLive.postValue(true)
+                startProgressUpdates()
             }
-        )
+
+            override fun onPaused() {
+                isPlaying = false
+                isPrepared = true
+                _isPlayingLive.postValue(false)
+                stopProgressUpdates()
+            }
+
+            override fun onCompleted() {
+                isPlaying = false
+                isPrepared = false
+                _isPlayingLive.postValue(false)
+                _time.postValue("00:00")
+                stopProgressUpdates()
+                currentTrack?.previewUrl?.let { url ->
+                    prepare(
+                        url = url,
+                        artistName = currentTrack?.artistName ?: "",
+                        trackName = currentTrack?.trackName ?: ""
+                    )
+                }
+            }
+        })
+    }
+
+    fun prepare(url: String, artistName: String, trackName: String) {
+        isPrepared = false
+        serviceController?.prepare(url, artistName, trackName)
     }
 
     fun toggle() {
-        if (!playerState.isPrepared) return
-        if (playerState.isPlaying) pause() else play()
-    }
-
-    private fun play() {
-        audioPlayer.play()
-        playerState = playerState.copy(isPlaying = true)
-        _isPlayingLive.value = true
-        startProgressUpdates()
-    }
-
-    private fun pause() {
-        audioPlayer.pause()
-        playerState = playerState.copy(isPlaying = false)
-        _isPlayingLive.value = false
-        stopProgressUpdates()
+        if (!isPrepared) return
+        if (isPlaying) {
+            serviceController?.pause()
+        } else {
+            serviceController?.play()
+        }
     }
 
     fun setTrack(track: Track) {
@@ -119,15 +128,11 @@ class PlayerViewModel(
 
     fun onPlaylistClicked(playlist: Playlist) {
         val track = currentTrack ?: return
-
         viewModelScope.launch {
             val added = playlistUseCase.addTrackToPlaylist(track, playlist)
             _playlistAddStatus.postValue(
-                if (added) {
-                    PlaylistAddStatus.Added(playlist.name)
-                } else {
-                    PlaylistAddStatus.AlreadyExists(playlist.name)
-                }
+                if (added) PlaylistAddStatus.Added(playlist.name)
+                else PlaylistAddStatus.AlreadyExists(playlist.name)
             )
         }
     }
@@ -136,12 +141,21 @@ class PlayerViewModel(
         _playlistAddStatus.value = null
     }
 
+    fun onAppInForeground() {
+        serviceController?.hideForeground()
+    }
+
+    fun onAppInBackground() {
+        if (isPlaying) {
+            serviceController?.showForeground()
+        }
+    }
+
     private fun startProgressUpdates() {
         if (progressJob?.isActive == true) return
-
         progressJob = viewModelScope.launch {
-            while (isActive && playerState.isPlaying) {
-                val ms = audioPlayer.currentPositionMs()
+            while (isActive && isPlaying) {
+                val ms = serviceController?.currentPositionMs() ?: 0
                 _time.value = formatTime(ms)
                 delay(PROGRESS_UPDATE_DELAY)
             }
@@ -153,6 +167,12 @@ class PlayerViewModel(
         progressJob = null
     }
 
+    fun stopPlayback() {
+        if (isPlaying) {
+            serviceController?.pause()
+        }
+    }
+
     private fun formatTime(ms: Int): String {
         val sec = ms / 1000
         return String.format("%02d:%02d", sec / 60, sec % 60)
@@ -160,7 +180,6 @@ class PlayerViewModel(
 
     override fun onCleared() {
         stopProgressUpdates()
-        audioPlayer.release()
         super.onCleared()
     }
 }

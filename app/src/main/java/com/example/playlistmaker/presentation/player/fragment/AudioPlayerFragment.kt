@@ -1,6 +1,11 @@
 package com.example.playlistmaker.presentation.player.fragment
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -15,10 +20,16 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.adapter.PlaylistBottomSheetAdapter
+import com.example.playlistmaker.presentation.player.service.AudioPlayerService
 import com.example.playlistmaker.presentation.player.viewmodel.PlayerViewModel
 import com.example.playlistmaker.presentation.player.viewmodel.PlaylistAddStatus
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 
 class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
@@ -30,6 +41,13 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
     private lateinit var playlistAdapter: PlaylistBottomSheetAdapter
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
+    private var serviceConnection: ServiceConnection? = null
+    private var isBound = false
+
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _ -> }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,14 +64,73 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         showTrackInfo(currentTrack!!)
         viewModel.setTrack(currentTrack!!)
 
-        currentTrack?.previewUrl?.let {
-            viewModel.prepare(it)
-        }
-
         initPlaylistAdapter()
         initBottomSheet()
         setupObservers()
         setupListeners()
+        bindPlayerService()
+    }
+
+    private fun bindPlayerService() {
+        val intent = Intent(requireContext(), AudioPlayerService::class.java).apply {
+            putExtra(AudioPlayerService.EXTRA_ARTIST, currentTrack?.artistName ?: "")
+            putExtra(AudioPlayerService.EXTRA_TRACK, currentTrack?.trackName ?: "")
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val binder = service as AudioPlayerService.PlayerBinder
+                viewModel.onServiceConnected(binder.getService())
+                currentTrack?.previewUrl?.let { url ->
+                    viewModel.prepare(
+                        url = url,
+                        artistName = currentTrack?.artistName ?: "",
+                        trackName = currentTrack?.trackName ?: ""
+                    )
+                }
+                isBound = true
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                isBound = false
+            }
+        }
+
+        requireContext().bindService(
+            intent,
+            serviceConnection!!,
+            Context.BIND_AUTO_CREATE
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onAppInForeground()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onAppInBackground()
+    }
+
+    override fun onDestroyView() {
+        viewModel.stopPlayback()
+        if (isBound) {
+            serviceConnection?.let { requireContext().unbindService(it) }
+            isBound = false
+        }
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun initPlaylistAdapter() {
@@ -83,7 +160,8 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         binding.overlay.visibility = View.GONE
         binding.overlay.alpha = 0.6f
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 binding.overlay.visibility =
                     if (newState == BottomSheetBehavior.STATE_HIDDEN) View.GONE else View.VISIBLE
@@ -190,10 +268,5 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
                 .centerCrop()
                 .into(coverImageView)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

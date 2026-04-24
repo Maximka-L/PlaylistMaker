@@ -29,7 +29,6 @@ val viewModelModule = module {
 
     viewModel {
         PlayerViewModel(
-            audioPlayer = get(),
             favoritesUseCase = get(),
             playlistUseCase = get()
         )
