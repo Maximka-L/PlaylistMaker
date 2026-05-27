@@ -8,7 +8,7 @@ interface FavoritesUseCase {
     suspend fun removeTrack(track: Track)
     fun getFavoriteTracks(): Flow<List<Track>>
 
-    suspend fun isFavorite(trackId: Int): Boolean
+    suspend fun isFavorite(trackId: Long): Boolean
 
     suspend fun toggleFavorite(track: Track): Boolean
 

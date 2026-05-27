@@ -26,7 +26,8 @@ class PlaylistUseCaseImpl(
         return playlistRepository.getPlaylistById(playlistId)
     }
 
-    override suspend fun getTracksByIds(trackIds: List<Int>): List<Track> {
+    // ИСПРАВЛЕНО: Теперь принимает List<Long> вместо List<Int>
+    override suspend fun getTracksByIds(trackIds: List<Long>): List<Track> {
         return playlistRepository.getTracksByIds(trackIds)
     }
 

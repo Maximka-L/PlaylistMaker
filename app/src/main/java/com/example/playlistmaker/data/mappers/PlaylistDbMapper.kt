@@ -31,9 +31,11 @@ object PlaylistDbMapper {
         )
     }
 
-    private fun fromJson(json: String): List<Int> {
+
+    private fun fromJson(json: String): List<Long> {
         if (json.isBlank()) return emptyList()
-        val type = object : TypeToken<List<Int>>() {}.type
+
+        val type = object : TypeToken<List<Long>>() {}.type
         return gson.fromJson(json, type) ?: emptyList()
     }
 }

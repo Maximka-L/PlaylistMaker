@@ -3,7 +3,7 @@ package com.example.playlistmaker.data.utils
 import com.example.playlistmaker.domain.models.Track
 
 data class TrackDto(
-    val trackId: Int,
+    val trackId: Long,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,

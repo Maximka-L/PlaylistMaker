@@ -49,10 +49,12 @@ class PlaylistRepositoryImpl(
         )
     }
 
-    override suspend fun getTracksByIds(trackIds: List<Int>): List<Track> {
+
+    override suspend fun getTracksByIds(trackIds: List<Long>): List<Track> {
         if (trackIds.isEmpty()) return emptyList()
 
         val allTracks = playlistTrackDao.getAllTracks()
+
         val trackMap = allTracks.associateBy { it.trackId }
 
         return trackIds.reversed().mapNotNull { id ->
@@ -83,7 +85,7 @@ class PlaylistRepositoryImpl(
         }
     }
 
-    private suspend fun deleteTrackIfUnused(trackId: Int) {
+    private suspend fun deleteTrackIfUnused(trackId: Long) {
         val playlists = playlistDao.getPlaylistsOnce()
             .map(PlaylistDbMapper::fromEntity)
 

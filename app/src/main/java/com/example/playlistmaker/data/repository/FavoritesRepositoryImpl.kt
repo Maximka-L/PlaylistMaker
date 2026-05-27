@@ -26,7 +26,7 @@ class FavoritesRepositoryImpl(
             .map { entities -> entities.map(FavoriteTrackDbMapper::fromEntity) }
     }
 
-    override suspend fun isFavorite(trackId: Int): Boolean {
+    override suspend fun isFavorite(trackId: Long): Boolean {
         return favoriteTrackDao.isFavorite(trackId)
     }
 }

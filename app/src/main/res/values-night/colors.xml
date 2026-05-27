@@ -1,8 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="button_text">#000000</color>
     <color name="button_background">#FFFFFF</color>
+
     <color name="background">#1A1B22</color>
-    <color name="text_primary">#1A1B22</color>
+
+
+    <color name="text_primary">#FFFFFF</color>
+    <color name="cursor_color">#3772E7</color>
     <color name="icon_color">#FF000000</color>
     <color name="light_blue_background">#2B2B2B</color>
     <color name="white">#FFFFFFFF</color>
@@ -12,49 +18,83 @@
     <color name="S_text">#000000</color>
     <color name="icon_col">#000000</color>
     <color name="texcolor">#000000</color>
+
     <color name="backgtint">#FF000000</color>
     <color name="main_background">#1A1B22</color>
-    <color name="search_text">#1A1B22</color>
-    <color name="media_text">#1A1B22</color>
-    <color name="media_background">#FFFFFF</color>
+
+    <!-- ТЕКСТ ПОИСКА -->
+    <color name="search_text">#FFFFFF</color>
+
+    <color name="media_text">#FFFFFF</color>
+    <color name="media_background">#1A1B22</color>
+
     <color name="icon_black">#000000</color>
+
+
     <color name="icon_back">#FFFFFF</color>
+
     <color name="colorPrimary">#BB86FC</color>
     <color name="colorPrimarySurface">#3700B3</color>
+
     <color name="switch_thumb_active_color">#3772E7</color>
     <color name="switch_thumb_inactive_color">#E0E0E0</color>
     <color name="switch_track_active_color">#9FBBF3</color>
     <color name="switch_track_inactive_color">#BDBDBD</color>
+
     <color name="light_black_background">#000000</color>
+
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
+
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
-    <color name="search_hint">#1A1B22</color>
-    <color name="search">#1A1B22</color>
-    <color name="clear">#1A1B22</color>
+
+    <!-- ПОИСК -->
+    <color name="search_hint">#AEAFB4</color>
+    <color name="search">#AEAFB4</color>
+    <color name="clear">#AEAFB4</color>
+
+    <!-- ТЕКСТ КНОПКИ -->
     <color name="textColor">#1A1B22</color>
+
     <color name="play_icon_color">#FFFFFF</color>
     <color name="mini_icon_color">#FFFFFF</color>
     <color name="yn_color">#FFFFFF</color>
-    <color name="albumTextView">#FFFFFF</color>
+
+    <!-- ПОДПИСИ -->
+    <color name="albumTextView">#AEAFB4</color>
+
     <color name="color_icon_status">#FFFFFF</color>
     <color name="ic_like">#FFFFFF</color>
+
     <color name="toast_background">#FFFFFF</color>
     <color name="toast_text">#1A1B22</color>
+
     <color name="albumText">#FFFFFF</color>
+
     <color name="input_media">#1A1B22</color>
     <color name="tb_media">#1A1B22</color>
-    <color name="playlist_bg_bg">#E6E8EB</color>
-    <color name="front">#FFFFFF</color>
+
+    <color name="playlist_bg_bg">#2B2B2B</color>
+
+    <!-- ФОН ПОИСКА -->
+    <color name="front">#2B2B2B</color>
+
     <color name="bottom_nav_divider">#2B2B2B</color>
+
     <color name="playlist_header_bg">#2B2B2B</color>
+
     <color name="ic_favorite">#2B2B2B</color>
+
     <color name="bottom_sheet_bg">#1A1B22</color>
+
     <color name="menu_sheet_bg">#1A1B22</color>
     <color name="menu_text_color">#FFFFFF</color>
+
     <color name="bottom_sheet_handle">#FFFFFF</color>
     <color name="bottom_sheet_handle_color">#FFFFFF</color>
+
     <color name="text_primary_ic_black">#FFFFFF</color>
+
 </resources>
