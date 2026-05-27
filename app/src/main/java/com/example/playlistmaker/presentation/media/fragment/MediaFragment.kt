@@ -13,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -21,6 +22,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.media.favorites.FavoritesViewModel
 import com.example.playlistmaker.presentation.media.ui.MediaScreen
 import com.example.playlistmaker.presentation.media.view_model.PlayListFragmentViewModel
+import com.example.playlistmaker.presentation.playlist.fragment.PlaylistFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaFragment : Fragment() {
@@ -35,6 +37,8 @@ class MediaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
             setContent {
                 val pagerState = rememberPagerState(pageCount = { 2 })
                 val coroutineScope = rememberCoroutineScope()
@@ -86,7 +90,7 @@ class MediaFragment : Fragment() {
     private fun openPlaylist(playlistId: Long) {
         findNavController().navigate(
             R.id.action_mediaFragment_to_playlistFragment,
-            bundleOf("playlistId" to playlistId)
+            bundleOf(PlaylistFragment.PLAYLIST_ID_KEY to playlistId)
         )
     }
 }

@@ -51,6 +51,10 @@ private val ysDisplayRegular = FontFamily(Font(R.font.ys_display_regular, FontWe
 
 class PlaylistFragment : Fragment() {
 
+    companion object {
+        const val PLAYLIST_ID_KEY = "playlistId"
+    }
+
     private val viewModel: PlaylistViewModel by viewModel()
     private var playlistId: Long = 0L
 
