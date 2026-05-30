@@ -10,7 +10,7 @@ interface PlaylistRepository {
     suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean
 
     suspend fun getPlaylistById(playlistId: Long): Playlist
-    suspend fun getTracksByIds(trackIds: List<Int>): List<Track>
+    suspend fun getTracksByIds(trackIds: List<Long>): List<Track>
 
     suspend fun removeTrackFromPlaylist(track: Track, playlist: Playlist)
 

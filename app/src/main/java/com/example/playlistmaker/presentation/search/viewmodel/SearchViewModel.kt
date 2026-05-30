@@ -21,6 +21,9 @@ class SearchViewModel(
     private val manageSearchHistoryUseCase: IManageSearchHistoryUseCase
 ) : ViewModel() {
 
+    private val _searchText = MutableLiveData("")
+    val searchText: LiveData<String> = _searchText
+
     private val _state = MutableLiveData<SearchScreenState>()
     val state: LiveData<SearchScreenState> = _state
 
@@ -51,30 +54,28 @@ class SearchViewModel(
     }
 
     fun onSearchTextChanged(text: String) {
-        val newQuery = text.trim()
-        if (newQuery == currentQuery) return
-        currentQuery = newQuery
+        _searchText.value = text
+        currentQuery = text
 
         searchDebounceJob?.cancel()
 
-        if (currentQuery.isEmpty()) {
-            lastTracks = null
-            searchCollectJob?.cancel()
-
+        if (text.isBlank()) {
             viewModelScope.launch {
-                _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+                val history = manageSearchHistoryUseCase.getHistory()
+                _state.value = SearchScreenState.History(history)
             }
             return
         }
 
         searchDebounceJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY)
-            performSearch(currentQuery)
+            performSearch(text)
         }
     }
 
     fun onSearchButtonClicked() {
-        if (currentQuery.isEmpty()) return
+        if (currentQuery.isBlank()) return
+
         searchDebounceJob?.cancel()
         performSearch(currentQuery)
     }
@@ -87,8 +88,14 @@ class SearchViewModel(
                 _state.value = newState
 
                 when (newState) {
-                    is SearchScreenState.Content -> lastTracks = newState.tracks
-                    is SearchScreenState.Empty -> lastTracks = emptyList()
+                    is SearchScreenState.Content -> {
+                        lastTracks = newState.tracks
+                    }
+
+                    is SearchScreenState.Empty -> {
+                        lastTracks = emptyList()
+                    }
+
                     else -> Unit
                 }
             }
@@ -104,10 +111,12 @@ class SearchViewModel(
             delay(CLICK_DEBOUNCE_DELAY)
         }
     }
+
     fun onResume() {
         if (currentQuery.isBlank()) {
             viewModelScope.launch {
-                _state.value = SearchScreenState.History(manageSearchHistoryUseCase.getHistory())
+                val history = manageSearchHistoryUseCase.getHistory()
+                _state.value = SearchScreenState.History(history)
             }
         } else {
             performSearch(currentQuery)

@@ -24,9 +24,9 @@ interface FavoriteTrackDao {
 
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_tracks WHERE trackId = :trackId)")
-    suspend fun isFavorite(trackId: Int): Boolean
+    suspend fun isFavorite(trackId: Long): Boolean
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_tracks WHERE trackId = :trackId)")
-    suspend fun isFavoriteOnce(trackId: Int): Boolean
+    suspend fun isFavoriteOnce(trackId: Long): Boolean
 
 }

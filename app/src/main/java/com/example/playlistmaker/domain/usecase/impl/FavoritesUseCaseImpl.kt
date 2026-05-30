@@ -21,7 +21,7 @@ class FavoritesUseCaseImpl(
         return favoritesRepository.getFavoriteTracks()
     }
 
-    override suspend fun isFavorite(trackId: Int): Boolean {
+    override suspend fun isFavorite(trackId: Long): Boolean {
         return favoritesRepository.isFavorite(trackId)
     }
 

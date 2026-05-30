@@ -1,5 +1,6 @@
 package com.example.playlistmaker.presentation.setting.viewmodel
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,9 @@ class SettingsViewModel(
     private val _darkTheme = MutableLiveData<Boolean>()
     val darkTheme: LiveData<Boolean> = _darkTheme
 
+    init {
+        loadTheme()
+    }
 
     fun loadTheme() {
         _darkTheme.value = getTheme()
@@ -22,5 +26,10 @@ class SettingsViewModel(
     fun changeTheme(enabled: Boolean) {
         setTheme(enabled)
         _darkTheme.value = enabled
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (enabled) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 }

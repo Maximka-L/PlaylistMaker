@@ -23,7 +23,7 @@ class FavoritesInteractorImpl (
             .map {list -> list.reversed() }
     }
 
-    override suspend fun isFavorite(trackId: Int): Boolean {
+    override suspend fun isFavorite(trackId: Long): Boolean {
         return repository.isFavorite(trackId)
     }
 }
